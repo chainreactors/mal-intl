@@ -1,6 +1,7 @@
 local function bof_path(bof_name, arch)
-    return "bof/move/" .. bof_name .. "/" .. bof_name .. "." .. arch .. ".o"
+    return "move/" .. bof_name .. "/" .. bof_name .. "." .. arch .. ".o"
 end
+
 -- psexec
 local function run_psexec(args, cmd)
     local host = ""
@@ -46,7 +47,6 @@ local function run_psexec(args, cmd)
     local session = active()
     local arch = session.Os.Arch
     local bof_file = bof_path("psexec", arch)
-
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
@@ -70,11 +70,6 @@ Note:
 - Service executable will be copied to C:\Windows\ on target
 - Service will be created and started automatically
 ]])
-
-
-local function bof_path(bof_name, arch)
-    return "bof/move/" .. bof_name .. "/" .. bof_name .. "." .. arch .. ".o"
-end
 
 -- dcom
 local function run_dcom(args, cmd)
@@ -125,7 +120,6 @@ local function run_dcom(args, cmd)
     local session = active()
     local arch = session.Os.Arch
     local bof_file = bof_path("dcom", arch)
-
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
@@ -214,7 +208,7 @@ local function run_wmi_proccreate(args, cmd)
         error("x86 is not supported for WMI operations")
     end
 
-    local bof_file = "bof/move/wmi/ProcCreate." .. arch .. ".o"
+    local bof_file = "move/wmi/ProcCreate." .. arch .. ".o"
 
     return bof(session, script_resource(bof_file), packed_args, true)
 end
@@ -315,7 +309,7 @@ local function run_wmi_eventsub(args, cmd)
         error("x86 is not supported for WMI operations")
     end
 
-    local bof_file = "bof/move/wmi/EventSub." .. arch .. ".o"
+    local bof_file = "move/wmi/EventSub." .. arch .. ".o"
 
     return bof(session, script_resource(bof_file), packed_args, true)
 end

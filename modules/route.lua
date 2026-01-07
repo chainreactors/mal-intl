@@ -6,7 +6,6 @@ local function run_route_print()
     local session = active()
     local arch = session.Os.Arch
     local bof_file = bof_path("route_print", arch)
-    print(script_resource(bof_file))
     return bof(session, script_resource(bof_file), {}, true)
 end
 
