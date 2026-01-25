@@ -6,7 +6,7 @@ end
 -- screenshot
 local function run_screenshot(cmd)
     local filename = cmd:Flags():GetString("filename")
-    local packed_args = bof_pack("z", filename)
+    local packed_args = bof_pack("ziiiii", filename,2,0,0,90,100)
     local session = active()
     local arch = session.Os.Arch
     local bof_file = bof_path("screenshot", arch)
