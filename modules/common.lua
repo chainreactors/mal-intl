@@ -6,7 +6,7 @@ end
 -- screenshot
 local function run_screenshot(cmd)
     local filename = cmd:Flags():GetString("filename")
-    local packed_args = bof_pack("zii", filename,2,0)
+    local packed_args = bof_pack("ziiiii", filename,2,0,0,90,100)
     local session = active()
     local arch = session.Os.Arch
     local bof_file = bof_path("screenshot", arch)
@@ -774,7 +774,7 @@ local function run_mimikatz(args, cmd)
 end
 
 local cmd_mimikatz = command("mimikatz", run_mimikatz, "Execute mimikatz with specified commands", "T1003")
-opsec("mimikatz", 5.9)
+opsec("mimikatz", 7.0)
 
 help("mimikatz", [[
 Positional arguments format:
