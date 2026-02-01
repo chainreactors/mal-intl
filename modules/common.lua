@@ -96,15 +96,15 @@ opsec("readfile", 9.0)
 
 -- kill_defender
 local function run_kill_defender(args,cmd)
-    local action = args[1]
-    if action == "" then
+    local action = (args and args[1]) or ""
+    if action == "" or string.sub(action, 1, 1) == "-" then
         action = cmd:Flags():GetString("action")
     end
     if action == "" then
         error("action is required (kill or check)")
     end
     if action ~= "kill" and action ~= "check" then
-        error("action must be 'kill' or 'check'")
+        error("action('".. action .."') must be 'kill' or 'check'")
     end
     local packed_args = bof_pack("z", action)
     local session = active()
