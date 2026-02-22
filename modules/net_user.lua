@@ -45,6 +45,7 @@ end
 
 local cmd_enum_net_user = command("net:user:enum", run_enum_net_user, "Enumerate network users [type]", "T1087.002")
 cmd_enum_net_user:Flags():String("type", "all", "enumeration type (all, locked, disabled, active)")
+bind_flags_completer(cmd_enum_net_user, { type = values_completer({"all", "locked", "disabled", "active"}) })
 opsec("net:user:enum", 9.0)
 
 -- query_net_user

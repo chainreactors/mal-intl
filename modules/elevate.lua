@@ -225,6 +225,7 @@ cmd_JuicyPotato:Flags():String("program", "c:\\windows\\system32\\cmd.exe", "Pro
 cmd_JuicyPotato:Flags():String("port", "1337", "COM server listening port")
 cmd_JuicyPotato:Flags():String("clsid", "{8BC3F05E-D86B-11D0-A075-00C04FB68820}", "CLSID to use for COM object")
 cmd_JuicyPotato:Flags():String("arguments", "", "Arguments to pass to the program")
+bind_flags_completer(cmd_JuicyPotato, { type = values_completer({"t", "u", "*"}) })
 opsec("elevate:JuicyPotato", 8.0)
 
 help("elevate:JuicyPotato", [[

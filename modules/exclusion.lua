@@ -35,6 +35,7 @@ end
 local cmd_add_exclusion = command("exclusion:add", run_add_exclusion, "Add Windows Defender exclusion <type> <data>", "T1562.001")
 cmd_add_exclusion:Flags():String("type", "", "exclusion type (path, process, extension)")
 cmd_add_exclusion:Flags():String("data", "", "exclusion data")
+bind_flags_completer(cmd_add_exclusion, { type = values_completer({"path", "process", "extension"}) })
 opsec("exclusion:add", 9.0)
 
 
@@ -58,4 +59,5 @@ end
 local cmd_del_exclusion = command("exclusion:delete", run_del_exclusion, "Delete Windows Defender exclusion <type> <data>", "T1562.001")
 cmd_del_exclusion:Flags():String("type", "", "exclusion type (path, process, extension)")
 cmd_del_exclusion:Flags():String("data", "", "exclusion data")
+bind_flags_completer(cmd_del_exclusion, { type = values_completer({"path", "process", "extension"}) })
 opsec("exclusion:delete", 9.0)

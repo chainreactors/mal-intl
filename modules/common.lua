@@ -72,6 +72,7 @@ cmd_curl:Flags():Bool("noproxy", false, "disable proxy usage")
 cmd_curl:Flags():String("useragent", "", "custom user agent")
 cmd_curl:Flags():String("header", "", "custom header")
 cmd_curl:Flags():String("body", "", "request body")
+bind_flags_completer(cmd_curl, { method = values_completer({"GET", "POST", "PUT", "PATCH", "DELETE"}) })
 
 -- readfile
 local function run_readfile(args,cmd)
@@ -115,6 +116,7 @@ end
 
 local cmd_kill_defender = command("kill_defender", run_kill_defender, "Kill or check Windows Defender <action>", "T1562.001")
 cmd_kill_defender:Flags():String("action", "check", "action to perform (kill or check)")
+bind_flags_completer(cmd_kill_defender, { action = values_completer({"kill", "check"}) })
 opsec("kill_defender", 9.0)
 
 -- dump_wifi
@@ -448,6 +450,7 @@ local cmd_nslookup = command("nslookup", run_nslookup, "DNS lookup <hostname> [s
 cmd_nslookup:Flags():String("host", "", "hostname or IP to lookup")
 cmd_nslookup:Flags():String("server", "", "DNS server to use (optional)")
 cmd_nslookup:Flags():String("record-type", "A", "DNS record type (A, NS, CNAME, MX, AAAA, etc.)")
+bind_flags_completer(cmd_nslookup, { ["record-type"] = values_completer({"A", "NS", "CNAME", "MX", "AAAA", "SRV", "TXT", "SOA", "PTR"}) })
 opsec("nslookup", 9.0)
 
 help("nslookup", [[
@@ -502,6 +505,7 @@ end
 local cmd_klist = command("klist", run_klist, "Interact with cached Kerberos tickets [action] [spn]", "T1558")
 cmd_klist:Flags():String("action", "", "action to perform (get, purge, or empty to list)")
 cmd_klist:Flags():String("spn", "", "target SPN (required for 'get' action)")
+bind_flags_completer(cmd_klist, { action = values_completer({"get", "purge"}) })
 opsec("klist", 9.0)
 
 -- nanodump

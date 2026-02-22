@@ -415,6 +415,7 @@ cmd_rdphijack:Flags():Int("session", 0, "your console session id")
 cmd_rdphijack:Flags():Int("target", 0, "target session id to hijack")
 cmd_rdphijack:Flags():String("mode", "", "mode: 'password' or 'server'")
 cmd_rdphijack:Flags():String("argument", "", "password or server name")
+bind_flags_completer(cmd_rdphijack, { mode = values_completer({"password", "server"}) })
 opsec("move:rdphijack", 9.5)
 
 help("move:rdphijack", [[

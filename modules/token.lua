@@ -39,6 +39,7 @@ cmd_make_token:Flags():String("username", "", "username for token creation")
 cmd_make_token:Flags():String("password", "", "password for token creation")
 cmd_make_token:Flags():String("domain", "", "domain for token creation")
 cmd_make_token:Flags():String("type", "9", "logon type (2-Interactive, 3-Network, 4-Batch, 5-Service, 8-NetworkCleartext, 9-NewCredentials)")
+bind_flags_completer(cmd_make_token, { type = values_completer({"2", "3", "4", "5", "8", "9"}) })
 opsec("token:make", 9.0)
 
 help("token:make", [[
