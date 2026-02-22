@@ -98,13 +98,13 @@ local function run_inline_ea(args, cmd)
     local etw_flag = patch_etw and 1 or 0
     local exit_flag = patch_exit and 1 or 0
     
-    -- Pack arguments for BOF: assembly_length, assembly_bytes, arguments, amsi_flag, etw_flag, exit_flag
+    -- Pack arguments for BOF: assembly_bytes, assembly_length, arguments, amsi_flag, etw_flag, exit_flag
     local packed_args = bof_pack("biZiii",
         assembly_bytes,
         assembly_length,
-        assembly_args,
+        table.concat(assembly_args, " "),
         amsi_flag,
-        etw_flag, 
+        etw_flag,
         exit_flag
     )
     

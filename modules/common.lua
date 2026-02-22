@@ -147,7 +147,7 @@ local cmd_dump_wifi = command("wifi:dump", run_dump_wifi, "Dump WiFi profile cre
 cmd_dump_wifi:Flags():String("profilename", "", "WiFi profile name to dump")
 opsec("wifi:dump", 9.0)
 
-help("dump_wifi", [[
+help("wifi:dump", [[
 Positional arguments format:
   wifi dump "My WiFi Network"
   wifi dump MyWiFi

@@ -521,8 +521,8 @@ local function run_trustedpath(cmd)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -566,8 +566,8 @@ local function run_CmstpElevatedCOM(args)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -586,8 +586,8 @@ local function run_ColorDataProxy(args)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -611,8 +611,8 @@ local function run_EditionUpgradeManager(cmd)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -639,8 +639,8 @@ local function run_RegistryShellCommand(args)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -664,8 +664,8 @@ local function run_SilentCleanupWinDir(cmd)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 
@@ -692,8 +692,8 @@ local function run_SspiUacBypass(args)
 
     local session = active()
     local arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 architecture not supported")
+    if arch == "x86" then
+        error("x86 architecture not supported")
         return
     end
 

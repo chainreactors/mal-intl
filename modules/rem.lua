@@ -36,7 +36,7 @@ local rem_socks_cmd = command("rem_community:socks5", run_socks5, "serving socks
 bind_args_completer(rem_socks_cmd, { rem_completer() })
 
 function run_rem_connect(arg_1)
-    rem_dial(active(), arg_1, { "-c", rem_link(arg_0), "-n" })
+    rem_dial(active(), arg_1, { "-c", rem_link(arg_1), "-n" })
 end
 
 local rem_connect_cmd = command("rem_community:connect", run_rem_connect, "connect to rem", "")
@@ -56,8 +56,8 @@ bind_args_completer(rem_fork, { rem_completer(), rem_agent_completer() })
 
 
 function run_rem(flag_pipe, args)
-    session = active()
-    arch = barch(active())
+    local session = active()
+    local arch = barch(active())
     table.insert(args, "-c")
     table.insert(args, rem_link(flag_pipe))
     return execute_exe(session, script_resource(rem_path(arch, "exe")), args, true, 600, arch, "", new_sac())
@@ -81,7 +81,7 @@ function restart_rem_agent(arg_1, arg_2)
     table.insert(args, "-c")
     table.insert(args, rem_link(arg_1))
 
-    return execute_exe(session, script_resource(path), args, true, 600, arch, "", new_sac())
+    return execute_exe(session, script_resource(path), args, true, 600, session.Os.Arch, "", new_sac())
 end
 
 function get_rem_log(arg_1, arg_2)
