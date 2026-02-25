@@ -85,25 +85,24 @@ opsec("elevate:EfsPotato", 8.0)
 help("elevate:EfsPotato", [[
 EfsPotato privilege escalation with automatic CLR version detection.
 
-Automatically selects .NET 3.5 or 4.0 version based on system CLR version.
+**Command execution:**
 
-Command execution:
-  elevate EfsPotato --command "whoami"
-  elevate EfsPotato --command "powershell -enc <base64>"
+```
+elevate EfsPotato --command "whoami"
+elevate EfsPotato --command "powershell -enc <base64>"
+```
 
-Shellcode execution:
-  elevate EfsPotato                                         # Use self_stager (default)
-  elevate EfsPotato --shellcode-file /path/to/sc.bin       # Load shellcode from file
-  elevate EfsPotato --shellcode-artifact beacon_x64        # Load shellcode from artifact
+**Shellcode execution:**
 
-Options:
-  --command: Execute a command (mutually exclusive with shellcode options)
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+```
+elevate EfsPotato
+elevate EfsPotato --shellcode-file /path/to/sc.bin
+elevate EfsPotato --shellcode-artifact beacon_x64
+```
 
-  Priority: command > shellcode-artifact > shellcode-file > self_stager
+Priority: `command` > `shellcode-artifact` > `shellcode-file` > `self_stager`
 
-Note: Exploits the MS-EFSR protocol for privilege escalation.
+> Exploits the MS-EFSR protocol. Auto-selects .NET 3.5 or 4.0 based on system CLR version.
 ]])
 
 -- SweetPotato - Unified command and shellcode execution with auto CLR detection
@@ -151,27 +150,27 @@ opsec("elevate:SweetPotato", 8.0)
 help("elevate:SweetPotato", [[
 SweetPotato privilege escalation with automatic CLR version detection.
 
-Automatically selects .NET 4.0 or 4.6 version based on system CLR version.
+**Command execution:**
 
-Command execution:
-  elevate SweetPotato --command "whoami"
-  elevate SweetPotato --command "powershell -enc <base64>"
+```
+elevate SweetPotato --command "whoami"
+elevate SweetPotato --command "powershell -enc <base64>"
+```
 
-Shellcode execution:
-  elevate SweetPotato                                         # Use self_stager (default)
-  elevate SweetPotato --shellcode-file /path/to/sc.bin       # Load shellcode from file
-  elevate SweetPotato --shellcode-artifact beacon_x64        # Load shellcode from artifact
+**Shellcode execution:**
 
-Advanced options (shellcode mode):
-  --listener-port: COM server listening port (default: 12333)
-  --target-process: Process to spawn for injection (default: c:\windows\system32\cmd.exe)
+```
+elevate SweetPotato
+elevate SweetPotato --shellcode-file /path/to/sc.bin
+elevate SweetPotato --shellcode-artifact beacon_x64
+```
 
-Options:
-  --command: Execute a command (mutually exclusive with shellcode options)
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+**Advanced options (shellcode mode):**
 
-  Priority: command > shellcode-artifact > shellcode-file > self_stager
+- `--listener-port`: COM server listening port (default: 12333)
+- `--target-process`: Process to spawn for injection (default: cmd.exe)
+
+Priority: `command` > `shellcode-artifact` > `shellcode-file` > `self_stager`
 ]])
 
 -- JuicyPotato
@@ -229,28 +228,29 @@ bind_flags_completer(cmd_JuicyPotato, { type = values_completer({"t", "u", "*"})
 opsec("elevate:JuicyPotato", 8.0)
 
 help("elevate:JuicyPotato", [[
-JuicyPotato privilege escalation tool with Tab completion support.
+JuicyPotato privilege escalation tool.
 
-Flag-based usage (recommended):
-  elevate JuicyPotato --type t --program "C:\Windows\Temp\malefic-demo.exe" --port  1116 --clsid {8BC3F05E-D86B-11D0-A075-00C04FB68820}
+**Examples:**
 
-Parameters:
-  --type: CreateProcess call type
-    * t = CreateProcessWithTokenW (default)
-    * u = CreateProcessAsUser
-    * * = auto-detect
-  --program: Program to launch (default: "c:\windows\system32\cmd.exe")
-  --port: COM server listening port (default: 1337)
-  --clsid: CLSID to use for COM object (default: {8BC3F05E-D86B-11D0-A075-00C04FB68820})
-  --arguments: Arguments to pass to the launched program
+```
+elevate JuicyPotato --type t --program "C:\Windows\Temp\malefic-demo.exe" --port 1116
+```
 
-Common CLSIDs:
-  - {8BC3F05E-D86B-11D0-A075-00C04FB68820} (BITS)
-  - {BB64F8A7-BEE7-4E1A-AB8D-7D8273F7FDB6} (Windows Media Player)
-  - {03ca98d6-ff5d-49b8-abc6-03dd84127020} (Automatic Proxy Configuration)
+**Parameters:**
 
-Note: Requires specific Windows versions and CLSID compatibility.
-OPSEC consideration: Use different ports and CLSIDs to avoid detection.
+- `--type`: CreateProcess call type (`t` = CreateProcessWithTokenW, `u` = CreateProcessAsUser, `*` = auto)
+- `--program`: Program to launch (default: cmd.exe)
+- `--port`: COM server listening port (default: 1337)
+- `--clsid`: CLSID for COM object (default: {8BC3F05E-D86B-11D0-A075-00C04FB68820})
+- `--arguments`: Arguments to pass to the launched program
+
+**Common CLSIDs:**
+
+- `{8BC3F05E-D86B-11D0-A075-00C04FB68820}` (BITS)
+- `{BB64F8A7-BEE7-4E1A-AB8D-7D8273F7FDB6}` (Windows Media Player)
+- `{03ca98d6-ff5d-49b8-abc6-03dd84127020}` (Automatic Proxy Configuration)
+
+> Requires specific Windows versions and CLSID compatibility.
 ]])
 
 -- =============================================================================
@@ -278,14 +278,15 @@ local cmd_SharpHiveNightmare = command("elevate:SharpHiveNightmare", run_SharpHi
 opsec("elevate:SharpHiveNightmare", 9.0)
 
 help("elevate:SharpHiveNightmare", [[
-SharpHiveNightmare (HiveNightmare/SeriousSAM) privilege escalation.
+SharpHiveNightmare (CVE-2021-36934) privilege escalation.
 
-Automatically selects .NET 4.0 or 4.5 version based on system CLR version.
+**Usage:**
 
-Usage:
-  elevate SharpHiveNightmare
+```
+elevate SharpHiveNightmare
+```
 
-This exploit leverages CVE-2021-36934 to access shadow copies of SAM/SYSTEM files.
+> Auto-selects .NET 4.0 or 4.5 based on system CLR version. Leverages shadow copies of SAM/SYSTEM files.
 ]])
 
 -- HiveNightmare.exe
@@ -323,26 +324,19 @@ opsec("elevate:ms14-058", 7.0)
 help("elevate:ms14-058", [[
 MS14-058 (CVE-2014-4113) kernel privilege escalation exploit.
 
-Examples:
-  elevate ms14-058                                         # Use self_stager (default)
-  elevate ms14-058 --shellcode-file C:\payload.bin        # Load shellcode from file
-  elevate ms14-058 --shellcode-artifact beacon_x64        # Load shellcode from artifact
+**Examples:**
 
-Options:
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+```
+elevate ms14-058
+elevate ms14-058 --shellcode-file C:\payload.bin
+elevate ms14-058 --shellcode-artifact beacon_x64
+```
 
-  If no options specified, uses self_stager by default.
-  Priority: shellcode-artifact > shellcode-file > self_stager
+Priority: `shellcode-artifact` > `shellcode-file` > `self_stager`
 
-Affected Systems:
-  - Windows 7 SP1
-  - Windows 8.1
-  - Windows Server 2008 R2 SP1
-  - Windows Server 2012/2012 R2
+**Affected Systems:** Windows 7 SP1, Windows 8.1, Windows Server 2008 R2 SP1, Windows Server 2012/2012 R2.
 
-Note: This exploit targets a vulnerability in win32k.sys.
-Supports both x86 and x64 architectures.
+> Targets a vulnerability in win32k.sys. Supports both x86 and x64.
 ]])
 
 -- ms15-051 (CVE-2015-1701)
@@ -365,26 +359,19 @@ opsec("elevate:ms15-051", 7.0)
 help("elevate:ms15-051", [[
 MS15-051 (CVE-2015-1701) kernel privilege escalation exploit.
 
-Examples:
-  elevate ms15-051                                         # Use self_stager (default)
-  elevate ms15-051 --shellcode-file C:\payload.bin        # Load shellcode from file
-  elevate ms15-051 --shellcode-artifact beacon_x64        # Load shellcode from artifact
+**Examples:**
 
-Options:
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+```
+elevate ms15-051
+elevate ms15-051 --shellcode-file C:\payload.bin
+elevate ms15-051 --shellcode-artifact beacon_x64
+```
 
-  If no options specified, uses self_stager by default.
-  Priority: shellcode-artifact > shellcode-file > self_stager
+Priority: `shellcode-artifact` > `shellcode-file` > `self_stager`
 
-Affected Systems:
-  - Windows 7 SP1
-  - Windows 8.1
-  - Windows Server 2008 R2 SP1
-  - Windows Server 2012/2012 R2
+**Affected Systems:** Windows 7 SP1, Windows 8.1, Windows Server 2008 R2 SP1, Windows Server 2012/2012 R2.
 
-Note: This exploit targets a vulnerability in the Windows kernel (win32k.sys).
-Supports both x86 and x64 architectures.
+> Targets a vulnerability in win32k.sys. Supports both x86 and x64.
 ]])
 
 -- ms16-016 (CVE-2016-0051) - x86 only
@@ -411,30 +398,21 @@ opsec("elevate:ms16-016", 7.0)
 help("elevate:ms16-016", [[
 MS16-016 (CVE-2016-0051) kernel privilege escalation exploit.
 
-Examples:
-  elevate ms16-016                                         # Use self_stager (default)
-  elevate ms16-016 --shellcode-file C:\payload.bin        # Load shellcode from file
-  elevate ms16-016 --shellcode-artifact beacon_x86        # Load shellcode from artifact
+**Examples:**
 
-Options:
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+```
+elevate ms16-016
+elevate ms16-016 --shellcode-file C:\payload.bin
+elevate ms16-016 --shellcode-artifact beacon_x86
+```
 
-  If no options specified, uses self_stager by default.
-  Priority: shellcode-artifact > shellcode-file > self_stager
+Priority: `shellcode-artifact` > `shellcode-file` > `self_stager`
 
-Requirements:
-  - x86 architecture ONLY (will fail on x64 systems)
+**Requirements:** x86 architecture ONLY (will fail on x64).
 
-Affected Systems:
-  - Windows Vista SP2 (x86)
-  - Windows 7 SP1 (x86)
-  - Windows 8.1 (x86)
-  - Windows Server 2008 SP2 (x86)
-  - Windows Server 2008 R2 SP1 (x86)
-  - Windows Server 2012/2012 R2 (x86)
+**Affected Systems:** Windows Vista SP2, Windows 7 SP1, Windows 8.1, Windows Server 2008/2008 R2/2012 (all x86 only).
 
-Note: This exploit targets a vulnerability in WebDAV client (mrxdav.sys).
+> Targets a vulnerability in WebDAV client (mrxdav.sys).
 ]])
 
 -- ms16-032 PowerShell exploit
@@ -485,30 +463,21 @@ opsec("elevate:cve-2020-0796", 7.0)
 help("elevate:cve-2020-0796", [[
 CVE-2020-0796 (SMBGhost) privilege escalation exploit.
 
-Examples:
-  elevate cve-2020-0796                                    # Use self_stager (default)
-  elevate cve-2020-0796 --shellcode-file C:\payload.bin   # Load shellcode from file
-  elevate cve-2020-0796 --shellcode-artifact beacon_x64   # Load shellcode from artifact
+**Examples:**
 
-Options:
-  --shellcode-file: Path to raw shellcode file (optional)
-  --shellcode-artifact: Artifact name for shellcode payload (optional)
+```
+elevate cve-2020-0796
+elevate cve-2020-0796 --shellcode-file C:\payload.bin
+elevate cve-2020-0796 --shellcode-artifact beacon_x64
+```
 
-  If no options specified, uses self_stager by default.
-  Priority: shellcode-artifact > shellcode-file > self_stager
+Priority: `shellcode-artifact` > `shellcode-file` > `self_stager`
 
-Requirements:
-  - x64 architecture ONLY
-  - Windows 10 version 1903/1909 with vulnerable SMBv3 compression
+**Requirements:** x64 architecture ONLY.
 
-Affected Systems:
-  - Windows 10 Version 1903 (April 2019 Update)
-  - Windows 10 Version 1909 (November 2019 Update)
-  - Windows Server Version 1903
-  - Windows Server Version 1909
+**Affected Systems:** Windows 10 Version 1903/1909, Windows Server Version 1903/1909.
 
-Note: This exploit targets the SMBv3 compression vulnerability in srv2.sys.
-Requires local access and SMBv3 compression enabled.
+> Targets the SMBv3 compression vulnerability in srv2.sys.
 ]])
 
 -- TrustedPath DLL Hijack
@@ -548,16 +517,13 @@ opsec("uac-bypass:trustedpath", 8.5)
 help("uac-bypass:trustedpath", [[
 UAC bypass via fake Windows directory with ComputerDefaults.exe and Secur32.dll hijacking.
 
-Examples:
-  uac-bypass trustedpath --local_dll_file C:\path\to\your\malicious.dll
+**Examples:**
 
-Requirements:
-  - x64 architecture only
-  - Valid DLL file for hijacking
-  - Windows 10/11 compatibility
+```
+uac-bypass trustedpath --local_dll_file C:\path\to\your\malicious.dll
+```
 
-This technique creates a fake Windows directory structure and hijacks the Secur32.dll
-loaded by ComputerDefaults.exe to bypass UAC.
+**Requirements:** x64 architecture only. Valid DLL file for hijacking. Windows 10/11 compatible.
 ]])
 
 -- CmstpElevatedCOM

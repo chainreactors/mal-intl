@@ -125,30 +125,29 @@ opsec("bof-execute_assembly", 8.5)
 help("bof-execute_assembly", [[
 Execute .NET assemblies with inline execution and optional patching capabilities.
 
-Examples:
-  bof-execute_assembly C:\Tools\Seatbelt.exe                                    # Basic execution
-  bof-execute_assembly C:\Tools\Seatbelt.exe --amsi --etw                       # With AMSI and ETW patching
-  bof-execute_assembly C:\Tools\Rubeus.exe --args "kerberoast /outfile:hashes"  # With arguments
-  bof-execute_assembly C:\Tools\SharpHound.exe --patchexit                      # With exit patching
+**Examples:**
 
-Legacy positional format (still supported):
-  bof-execute_assembly C:\Tools\Seatbelt.exe --amsi --etw AntiVirus
-  bof-execute_assembly C:\Tools\Rubeus.exe kerberoast /outfile:hashes --amsi
+```
+bof-execute_assembly C:\Tools\Seatbelt.exe
+bof-execute_assembly C:\Tools\Seatbelt.exe --amsi --etw
+bof-execute_assembly C:\Tools\Rubeus.exe --args "kerberoast /outfile:hashes"
+bof-execute_assembly C:\Tools\SharpHound.exe --patchexit
+```
 
-Options:
-  --amsi: Patch AMSI (Anti-Malware Scan Interface) before execution
-  --etw: Patch ETW (Event Tracing for Windows) before execution  
-  --patchexit: Patch exit functions to prevent assembly from terminating the process
-  --args: Arguments to pass to the .NET assembly
+**Legacy positional format (still supported):**
 
-Features:
-- Inline execution without dropping files to disk
-- Optional AMSI/ETW patching for evasion
-- Process exit protection
-- Support for command-line arguments
-- Compatible with most .NET assemblies
+```
+bof-execute_assembly C:\Tools\Seatbelt.exe --amsi --etw AntiVirus
+bof-execute_assembly C:\Tools\Rubeus.exe kerberoast /outfile:hashes --amsi
+```
 
-Note: This technique loads and executes .NET assemblies directly in memory
-using inline assembly execution, providing better OPSEC than traditional methods.
+**Options:**
+
+- `--amsi`: Patch AMSI (Anti-Malware Scan Interface) before execution
+- `--etw`: Patch ETW (Event Tracing for Windows) before execution
+- `--patchexit`: Patch exit functions to prevent assembly from terminating the process
+- `--args`: Arguments to pass to the .NET assembly
+
+> Inline execution without dropping files to disk. This technique loads and executes .NET assemblies directly in memory.
 ]])
 

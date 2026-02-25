@@ -43,17 +43,21 @@ bind_flags_completer(cmd_make_token, { type = values_completer({"2", "3", "4", "
 opsec("token:make", 9.0)
 
 help("token:make", [[
-Create an impersonated token from given credentials:
-  token:make --username admin --password P@ssword --domain domain.local --type 8
-  token:make --username admin --password P@ssword --domain domain.local
+**Create an impersonated token from given credentials:**
 
-Logon types:
-  2 - Interactive
-  3 - Network
-  4 - Batch
-  5 - Service
-  8 - NetworkCleartext
-  9 - NewCredentials (default)
+```
+token make --username admin --password P@ssword --domain domain.local --type 8
+token make --username admin --password P@ssword --domain domain.local
+```
+
+**Logon types:**
+
+- `2` - Interactive
+- `3` - Network
+- `4` - Batch
+- `5` - Service
+- `8` - NetworkCleartext
+- `9` - NewCredentials (default)
 ]])
 
 -- steal_token
@@ -87,11 +91,12 @@ cmd_steal_token:Flags():String("pid", "", "process ID to steal token from")
 opsec("token:steal", 9.0)
 
 help("token:steal", [[
-Steal access token from a process:
-  token:steal 1234
-  token:steal --pid 1234
+**Steal access token from a process:**
 
-Note:
-- Requires appropriate privileges to access target process
-- Target process must have a valid access token
+```
+token steal 1234
+token steal --pid 1234
+```
+
+> Requires appropriate privileges to access target process. Target process must have a valid access token.
 ]])
