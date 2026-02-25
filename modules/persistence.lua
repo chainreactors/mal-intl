@@ -156,7 +156,7 @@ end
 
 local cmd_scheduled_task = command("persistence:Scheduled_Task",
                                    run_scheduled_task, "persistence",
-                                   "T1053.002")
+                                   "T1053.005")
 cmd_scheduled_task:Flags():String("taskname", persistdefaults.taskname,
                                   "taskname")
 cmd_scheduled_task:Flags():String("command", persistdefaults.command,
@@ -502,6 +502,6 @@ local function run_regkey_autorun(cmd)
     return result
 end
 
-local cmd_regkey = command("persistence:reg_key", run_regkey_autorun, "persistence by reg_key", "T1113")
+local cmd_regkey = command("persistence:reg_key", run_regkey_autorun, "persistence by reg_key", "T1547.001")
 cmd_regkey:Flags():String("reg_key_name","Windows_Updater","reg_key")
 opsec("persistence:reg_key", 9.0)

@@ -115,7 +115,7 @@ local function run_inline_ea(args, cmd)
 end
 
 local cmd_inline_ea = command("bof-execute_assembly", run_inline_ea,
-        "Execute .NET assemblies with inline execution and patching", "T1055")
+        "Execute .NET assemblies with inline execution and patching", "T1620")
 cmd_inline_ea:Flags():Bool("amsi", false, "Patch AMSI before execution")
 cmd_inline_ea:Flags():Bool("etw", false, "Patch ETW before execution") 
 cmd_inline_ea:Flags():Bool("patchexit", false, "Patch exit functions")

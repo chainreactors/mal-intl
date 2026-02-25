@@ -34,7 +34,7 @@ local function run_make_token(cmd)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
-local cmd_make_token = command("token:make", run_make_token, "Create impersonated token from credentials <username> <password> <domain> [type]", "T1134.001")
+local cmd_make_token = command("token:make", run_make_token, "Create impersonated token from credentials <username> <password> <domain> [type]", "T1134.003")
 cmd_make_token:Flags():String("username", "", "username for token creation")
 cmd_make_token:Flags():String("password", "", "password for token creation")
 cmd_make_token:Flags():String("domain", "", "domain for token creation")

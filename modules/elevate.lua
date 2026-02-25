@@ -510,7 +510,7 @@ local function run_trustedpath(cmd)
 end
 
 local cmd_trustedpath = command("uac-bypass:trustedpath", run_trustedpath,
-        "UAC bypass via fake windows directory with ComputerDefaults.exe and Secur32.dll", "T1068")
+        "UAC bypass via fake windows directory with ComputerDefaults.exe and Secur32.dll", "T1548.002")
 cmd_trustedpath:Flags():String("local_dll_file", "", "Full path to the DLL file to be executed")
 opsec("uac-bypass:trustedpath", 8.5)
 
@@ -543,7 +543,7 @@ local function run_CmstpElevatedCOM(args)
 end
 
 local cmd_CmstpElevatedCOM = command("uac-bypass:elevatedcom", run_CmstpElevatedCOM,
-        "UAC bypass using CmstpElevatedCOM technique", "T1068")
+        "UAC bypass using CmstpElevatedCOM technique", "T1548.002")
 opsec("uac-bypass:elevatedcom", 8.5)
 
 -- ColorDataProxy UAC Bypass
@@ -563,7 +563,7 @@ local function run_ColorDataProxy(args)
 end
 
 local cmd_ColorDataProxy = command("uac-bypass:colordataproxy", run_ColorDataProxy,
-        "UAC bypass using ColorDataProxy technique", "T1068")
+        "UAC bypass using ColorDataProxy technique", "T1548.002")
 opsec("uac-bypass:colordataproxy", 8.5)
 
 -- EditionUpgradeManager UAC Bypass
@@ -594,7 +594,7 @@ local function run_EditionUpgradeManager(cmd)
 end
 
 local cmd_EditionUpgradeManager = command("uac-bypass:editionupgrade", run_EditionUpgradeManager,
-        "UAC bypass using EditionUpgradeManager technique", "T1068")
+        "UAC bypass using EditionUpgradeManager technique", "T1548.002")
 cmd_EditionUpgradeManager:Flags():String("command", "", "Command to execute with elevated privileges")
 cmd_EditionUpgradeManager:Flags():Bool("use_disk_file", false, "Use on-disk file variant")
 opsec("uac-bypass:editionupgrade", 8.5)
@@ -616,7 +616,7 @@ local function run_RegistryShellCommand(args)
 end
 
 local cmd_RegistryShellCommand = command("uac-bypass:registryshell", run_RegistryShellCommand,
-        "UAC bypass using Registry Shell Command technique", "T1068")
+        "UAC bypass using Registry Shell Command technique", "T1548.002")
 opsec("uac-bypass:registryshell", 8.5)
 
 -- SilentCleanupWinDir UAC Bypass
@@ -647,7 +647,7 @@ local function run_SilentCleanupWinDir(cmd)
 end
 
 local cmd_SilentCleanupWinDir = command("uac-bypass:silentcleanup", run_SilentCleanupWinDir,
-        "UAC bypass using SilentCleanupWinDir technique", "T1068")
+        "UAC bypass using SilentCleanupWinDir technique", "T1548.002")
 cmd_SilentCleanupWinDir:Flags():String("command", "", "Command to execute with elevated privileges")
 cmd_SilentCleanupWinDir:Flags():Bool("use_disk_file", false, "Use on-disk file variant")
 opsec("uac-bypass:silentcleanup", 8.5)
@@ -669,7 +669,7 @@ local function run_SspiUacBypass(args)
 end
 
 local cmd_SspiUacBypass = command("uac-bypass:sspi", run_SspiUacBypass,
-        "UAC bypass using SSPI technique", "T1068")
+        "UAC bypass using SSPI technique", "T1548.002")
 opsec("uac-bypass:sspi", 8.5)
 
 -- =============================================================================
@@ -689,7 +689,7 @@ local function run_EnvBypass(args)
 end
 
 local cmd_EnvBypass = command("uac-bypass:envbypass", run_EnvBypass,
-        "UAC bypass using environment variable manipulation", "T1068")
+        "UAC bypass using environment variable manipulation", "T1548.002")
 opsec("uac-bypass:envbypass", 8.0)
 
 -- EventVwr UAC bypass
@@ -706,7 +706,7 @@ local function run_EventVwrBypass(args)
 end
 
 local cmd_EventVwrBypass = command("uac-bypass:eventvwr", run_EventVwrBypass,
-        "UAC bypass using Event Viewer hijack", "T1068")
+        "UAC bypass using Event Viewer hijack", "T1548.002")
 opsec("uac-bypass:eventvwr", 8.0)
 
 -- WScript UAC bypass
@@ -723,7 +723,7 @@ local function run_WScriptBypass(args)
 end
 
 local cmd_WScriptBypass = command("uac-bypass:wscript", run_WScriptBypass,
-        "UAC bypass using WScript hijack", "T1068")
+        "UAC bypass using WScript hijack", "T1548.002")
 opsec("uac-bypass:wscript", 8.0)
 
 

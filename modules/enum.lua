@@ -9,7 +9,7 @@ local function run_dotnet_enum(cmd)
     return bof(session, script_resource(bof_file), {}, true)
 end
 
-local cmd_dotnet_enum = command("enum:dotnet_process", run_dotnet_enum, "Find processes that most likely have .NET loaded.", "T1033")
+local cmd_dotnet_enum = command("enum:dotnet_process", run_dotnet_enum, "Find processes that most likely have .NET loaded.", "T1057")
 opsec("enum:dotnet_process", 9.0)
 
 -- enum_drives
@@ -19,7 +19,7 @@ local function run_enum_drives(cmd)
     local bof_file = bof_path("enum_drives", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_enum_drives = command("enum:drives", run_enum_drives, "Enumerate system drives", "T1135")
+local cmd_enum_drives = command("enum:drives", run_enum_drives, "Enumerate system drives", "T1082")
 opsec("enum:drives", 9.0)
 
 -- enum_files
@@ -59,7 +59,7 @@ local function run_enum_localcert(cmd)
     return bof(session, script_resource(bof_file), packed_args, true)
 end
 
-local cmd_enum_localcert = command("enum:localcert", run_enum_localcert, "Enumerate local certificates <store>", "T1553.003")
+local cmd_enum_localcert = command("enum:localcert", run_enum_localcert, "Enumerate local certificates <store>", "T1552.004")
 cmd_enum_localcert:Flags():String("store", "", "certificate store name")
 opsec("enum:localcert", 9.0)
 
@@ -108,7 +108,7 @@ local function run_arp()
     local bof_file = bof_path("enum_arp", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_enum_arp = command("enum:arp", run_arp, "Enum ARP table", "T1016")
+local cmd_enum_arp = command("enum:arp", run_arp, "Enum ARP table", "T1018")
 opsec("enum:arp", 9.0)
 
 -- enum software
@@ -118,7 +118,7 @@ local function run_enum_software()
     local bof_file = bof_path("enum_software", arch)
     return bof(session, script_resource(bof_file), {}, true)
 end
-local cmd_enum_software = command("enum:software", run_enum_software, "Enum software", "T1016")
+local cmd_enum_software = command("enum:software", run_enum_software, "Enum software", "T1518")
 opsec("enum:software", 9.0)
 
 local function run_check_av(cmd)
