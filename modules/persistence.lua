@@ -150,7 +150,7 @@ function run_scheduled_task(cmd, args)
         uploadraw(session, custom_file_content, drop_location, "0644", false)
     end
 
-    return taskschd_create(session, taskname, drop_location, trigger,
+    return taskschd_create(session, taskname, drop_location, "\\", trigger,
                            "2023-10-10T09:00:00")
 end
 
