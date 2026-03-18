@@ -12,3 +12,15 @@ end
 
 local cmd_dump_clipboard = command("clipboard:dump", run_dump_clipboard, "Dump clipboard content", "T1115")
 opsec("clipboard:dump", 9.0)
+
+help("clipboard:dump", [[
+Dump the current clipboard content.
+
+**Usage:**
+
+```
+clipboard dump
+```
+
+> No arguments required.
+]])

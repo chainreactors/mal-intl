@@ -12,6 +12,18 @@ end
 local cmd_dotnet_enum = command("enum:dotnet_process", run_dotnet_enum, "Find processes that most likely have .NET loaded.", "T1057")
 opsec("enum:dotnet_process", 9.0)
 
+help("enum:dotnet_process", [[
+Find processes that most likely have the .NET CLR loaded.
+
+**Usage:**
+
+```
+enum dotnet_process
+```
+
+> No arguments required.
+]])
+
 -- enum_drives
 local function run_enum_drives(cmd)
     local session = active()
@@ -21,6 +33,18 @@ local function run_enum_drives(cmd)
 end
 local cmd_enum_drives = command("enum:drives", run_enum_drives, "Enumerate system drives", "T1082")
 opsec("enum:drives", 9.0)
+
+help("enum:drives", [[
+Enumerate all logical drives on the system.
+
+**Usage:**
+
+```
+enum drives
+```
+
+> No arguments required.
+]])
 
 -- enum_files
 local function run_enum_files(cmd)
@@ -46,6 +70,19 @@ cmd_enum_files:Flags():String("pattern", "", "search pattern (e.g., *.txt)")
 cmd_enum_files:Flags():String("keyword", "", "optional keyword filter")
 opsec("enum:files", 9.0)
 
+help("enum:files", [[
+Enumerate files in a directory matching a pattern.
+
+**Usage:**
+
+```
+enum files --directory C:\Users --pattern "*.txt"
+enum files --directory C:\Users --pattern "*.docx" --keyword "password"
+```
+
+> `--directory` and `--pattern` are required. `--keyword` is optional for content filtering.
+]])
+
 -- enum_localcert
 local function run_enum_localcert(cmd)
     local store = cmd:Flags():GetString("store")
@@ -63,6 +100,19 @@ local cmd_enum_localcert = command("enum:localcert", run_enum_localcert, "Enumer
 cmd_enum_localcert:Flags():String("store", "", "certificate store name")
 opsec("enum:localcert", 9.0)
 
+help("enum:localcert", [[
+Enumerate certificates in a local certificate store.
+
+**Usage:**
+
+```
+enum localcert --store My
+enum localcert --store Root
+```
+
+> `--store` is required. Common stores: My, Root, CA, Trust.
+]])
+
 -- enum_localsessions
 local function run_enum_localsessions(cmd)
     local session = active()
@@ -74,6 +124,18 @@ end
 local cmd_enum_localsessions = command("enum:localsessions", run_enum_localsessions, "Enumerate local user sessions", "T1033")
 opsec("enum:localsessions", 9.0)
 
+help("enum:localsessions", [[
+Enumerate currently logged-on user sessions.
+
+**Usage:**
+
+```
+enum localsessions
+```
+
+> No arguments required.
+]])
+
 -- enum_dns
 local function run_enum_dns(cmd)
     local session = active()
@@ -84,6 +146,18 @@ end
 
 local cmd_enum_dns = command("enum:dns", run_enum_dns, "Enum DNS configuration", "T1016")
 opsec("enum:dns", 9.0)
+
+help("enum:dns", [[
+Enumerate DNS client configuration.
+
+**Usage:**
+
+```
+enum dns
+```
+
+> No arguments required.
+]])
 
 -- enum_dc
 local function run_enum_dc(cmd)
@@ -101,6 +175,18 @@ end
 local cmd_enum_dc = command("enum:dc", run_enum_dc, "Enumerate domain information using Active Directory Domain Services", "T1018")
 opsec("enum:dc", 9.0)
 
+help("enum:dc", [[
+Enumerate domain controller information using Active Directory Domain Services.
+
+**Usage:**
+
+```
+enum dc
+```
+
+> No arguments required. x64 only.
+]])
+
 -- enum_arp
 local function run_arp()
     local session = active()
@@ -110,6 +196,18 @@ local function run_arp()
 end
 local cmd_enum_arp = command("enum:arp", run_arp, "Enum ARP table", "T1018")
 opsec("enum:arp", 9.0)
+
+help("enum:arp", [[
+Enumerate the ARP table.
+
+**Usage:**
+
+```
+enum arp
+```
+
+> No arguments required.
+]])
 
 -- enum software
 local function run_enum_software()
@@ -121,6 +219,18 @@ end
 local cmd_enum_software = command("enum:software", run_enum_software, "Enum software", "T1518")
 opsec("enum:software", 9.0)
 
+help("enum:software", [[
+Enumerate installed software on the target.
+
+**Usage:**
+
+```
+enum software
+```
+
+> No arguments required.
+]])
+
 local function run_check_av(cmd)
     local session = active()
     local arch = session.Os.Arch
@@ -129,3 +239,15 @@ local function run_check_av(cmd)
 end
 local cmd_check_av = command("enum:av", run_check_av, "Check for antivirus software", "T1518.001")
 opsec("enum:av", 9.0)
+
+help("enum:av", [[
+Check for installed antivirus and security software by scanning running processes.
+
+**Usage:**
+
+```
+enum av
+```
+
+> No arguments required.
+]])

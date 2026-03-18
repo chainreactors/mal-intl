@@ -27,6 +27,18 @@ cmd_add_net_user:Flags():String("password", "", "the password to set")
 
 opsec("net:user:add", 9.0)
 
+help("net:user:add", [[
+Add a new local user account.
+
+**Usage:**
+
+```
+net user add --username newuser --password P@ssw0rd
+```
+
+> `--username` and `--password` are required. Requires administrator privileges.
+]])
+
 -- enum_net_user
 local function run_enum_net_user(cmd)
     local enumtype = cmd:Flags():GetString("type")
@@ -48,6 +60,20 @@ cmd_enum_net_user:Flags():String("type", "all", "enumeration type (all, locked, 
 bind_flags_completer(cmd_enum_net_user, { type = values_completer({"all", "locked", "disabled", "active"}) })
 opsec("net:user:enum", 9.0)
 
+help("net:user:enum", [[
+Enumerate network users by status type.
+
+**Usage:**
+
+```
+net user enum
+net user enum --type locked
+net user enum --type disabled
+```
+
+> Default type is `all`. Options: all, locked, disabled, active.
+]])
+
 -- query_net_user
 local function run_query_net_user(cmd)
     local username = cmd:Flags():GetString("username")
@@ -66,3 +92,16 @@ local cmd_query_net_user = command("net:user:query", run_query_net_user, "Query 
 cmd_query_net_user:Flags():String("username", "", "username to query")
 cmd_query_net_user:Flags():String("domain", "", "domain name (optional)")
 opsec("net:user:query", 9.0)
+
+help("net:user:query", [[
+Query detailed information for a specific user.
+
+**Usage:**
+
+```
+net user query --username admin
+net user query --username admin --domain CONTOSO
+```
+
+> `--username` is required. `--domain` is optional.
+]])

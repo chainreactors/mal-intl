@@ -12,6 +12,18 @@ end
 local cmd_enum_exclusion = command("exclusion:enum", run_enum_exclusion, "Enumerate Windows Defender exclusions", "T1518.001")
 opsec("exclusion:enum", 9.0)
 
+help("exclusion:enum", [[
+Enumerate current Windows Defender exclusions.
+
+**Usage:**
+
+```
+exclusion enum
+```
+
+> No arguments required.
+]])
+
 -- add_exclusion
 local function run_add_exclusion(cmd)
     local excltype = cmd:Flags():GetString("type")
@@ -38,6 +50,19 @@ cmd_add_exclusion:Flags():String("data", "", "exclusion data")
 bind_flags_completer(cmd_add_exclusion, { type = values_completer({"path", "process", "extension"}) })
 opsec("exclusion:add", 9.0)
 
+help("exclusion:add", [[
+Add a Windows Defender exclusion.
+
+**Usage:**
+
+```
+exclusion add --type path --data "C:\Windows\Temp"
+exclusion add --type process --data "payload.exe"
+exclusion add --type extension --data ".exe"
+```
+
+> `--type` (path/process/extension) and `--data` are required.
+]])
 
 -- del_exclusion
 local function run_del_exclusion(cmd)
@@ -61,3 +86,16 @@ cmd_del_exclusion:Flags():String("type", "", "exclusion type (path, process, ext
 cmd_del_exclusion:Flags():String("data", "", "exclusion data")
 bind_flags_completer(cmd_del_exclusion, { type = values_completer({"path", "process", "extension"}) })
 opsec("exclusion:delete", 9.0)
+
+help("exclusion:delete", [[
+Delete a Windows Defender exclusion.
+
+**Usage:**
+
+```
+exclusion delete --type path --data "C:\Windows\Temp"
+exclusion delete --type process --data "payload.exe"
+```
+
+> `--type` (path/process/extension) and `--data` are required.
+]])

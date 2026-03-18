@@ -11,3 +11,15 @@ end
 
 local cmd_route_print = command("route:print", run_route_print, "Display routing table", "T1016")
 opsec("route:print", 9.0)
+
+help("route:print", [[
+Display the system routing table.
+
+**Usage:**
+
+```
+route print
+```
+
+> No arguments required.
+]])

