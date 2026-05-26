@@ -1062,6 +1062,7 @@ logonpasswords
 -- hashdump
 local function run_hashdump()
     local session = active()
+    session = with_context(session, "hashdump")
     local arch = session.Os.Arch
     local bof_file = bof_path("hashdump", arch)
     return bof(session, script_resource(bof_file), {}, true)
