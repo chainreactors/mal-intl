@@ -1,19 +1,42 @@
-local prebuild_modules = {}
-local seen_prebuild_modules = {}
+local function prebuild_module_names()
+    local modules = {}
+    local seen = {}
 
-for _, filename in ipairs(list_resource("modules")) do
-    local module = filename:sub(1, filename:find(".", 1, true) - 1)
-    if not seen_prebuild_modules[module] then
-        seen_prebuild_modules[module] = true
-        prebuild_modules[#prebuild_modules + 1] = module
+    for _, filename in ipairs(list_resource("modules")) do
+        local name = string.match(filename, "^(.*)%.x64%.dll$")
+            or string.match(filename, "^(.*)%.x86%.dll$")
+            or string.match(filename, "^(.*)%.dll$")
+
+        if name and not seen[name] then
+            seen[name] = true
+            table.insert(modules, name)
+        end
     end
+
+    table.sort(modules)
+    return modules
 end
 
-table.sort(prebuild_modules)
+local prebuild_modules = prebuild_module_names()
 
-local prebuild_examples = {}
-for _, module in ipairs(prebuild_modules) do
-    prebuild_examples[#prebuild_examples + 1] = "load_prebuild " .. module
+local function prebuild_help(modules)
+    local lines = {
+        "Load precompiled module bundles into the current session.",
+        "",
+        "**Usage (positional argument required):**",
+        "",
+        "```",
+    }
+
+    for _, module in ipairs(modules) do
+        table.insert(lines, "load_prebuild " .. module)
+    end
+
+    table.insert(lines, "```")
+    table.insert(lines, "")
+    table.insert(lines, "> Argument is the module bundle name. Available: " .. table.concat(modules, ", ") .. ".")
+
+    return table.concat(lines, "\n")
 end
 
 function load_prebuild(arg_1)
@@ -30,14 +53,4 @@ end
 local load_prebuild_cmd = command("load_prebuild", load_prebuild, "load " .. table.concat(prebuild_modules, "|") .. " precompiled modules", "")
 bind_args_completer(load_prebuild_cmd, { values_completer(prebuild_modules) })
 
-help("load_prebuild", table.concat({
-    "Load precompiled module bundles into the current session.",
-    "",
-    "**Usage (positional argument required):**",
-    "",
-    "```",
-    table.concat(prebuild_examples, "\n"),
-    "```",
-    "",
-    "> Argument is the module bundle name. Available: " .. table.concat(prebuild_modules, ", ") .. ".",
-}, "\n"))
+help("load_prebuild", prebuild_help(prebuild_modules))
